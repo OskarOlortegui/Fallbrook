@@ -1,39 +1,7 @@
 import {Schema, model} from 'mongoose'
 import { noteSchema } from './utils.model.js';
 
-const collection = 'doctors'; // 's' plural
-
-/* Sub-esquemas de clinicas */
-/* const clinicSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    medicalGroup: {  // NUEVO: Para saber si esta sede pertenece a un grupo (ej: "RadNet" o "Alliance")
-        type: Schema.Types.ObjectId, 
-        ref: 'medicalGroups',
-        // Required?? maybe not
-        index: true 
-    },
-    address: {
-        type: String,
-        required: true
-    },
-    city: {
-        type: String,
-        required: true,
-        index: true //optimiza las busquedas
-    },
-    state: {
-        type: String,
-        default: "CA" //California
-    },
-    zipCode: { type: String },
-    phone: { type: String },
-    fax: { type: String },
-    tin: { type: String }, // Tax ID específico de esa locación
-    active: { type: Boolean, default: true }
-}, {timestamps: true}) */
+const collection = 'Doctor';
 
 const doctorSchema = new Schema({
     name: {
@@ -111,20 +79,22 @@ const doctorSchema = new Schema({
     // Un array de objetos (Subdocumentos)
     clinics: [{ 
         type: Schema.Types.ObjectId, 
-        ref: 'clinics'  //nombre de collection
+        ref: 'Clinic', 
+        default: []  
     }], // Esto permite que un doctor tenga 1, 2 o 5 clínicas.
-    // Un array de strings para los seguros
-    insurances: {
-      type: [String], // Como los nombres de seguros suelen ser cortos (CHG, Prospect), un array de strings es lo más eficiente para filtrar.
-      index: true, // Importante para que el buscador de seguros sea rápido
-      default: []
-    },
+    // NUEVO: Relación directa con medical groups
+    medicalGroups: [{
+        type: Schema.Types.ObjectId,
+        ref: 'MedicalGroup',
+        default: [],  
+        index: true
+    }],
     // NUEVO: Historial de notas o noticias
     notes: [noteSchema], 
     //active: { type: Boolean, default: true }
     status: {
         type: String,
-        enum: ["verified", "prohibited", "out-of-network", "pending"], //  ["active", "inactive", "blocked"],
+        enum: ["verified", "prohibited", "deleted"],
         default: "verified",
         index: true
     },
@@ -133,6 +103,13 @@ const doctorSchema = new Schema({
         default: "" // Ej: "Quieren cambio de PCP", "Ya no acepta IPA", "Bad reputation"
     }
 }, {timestamps: true})
+
+// Middleware Usamos getOptions() para detectar la "llave"
+doctorSchema.pre(/^find/, function() {
+    if (!this.getOptions().includeDeleted) {
+        this.where({ status: { $ne: "deleted" } });
+    }
+});
 
 const Doctor = model(collection, doctorSchema)
 export default Doctor;

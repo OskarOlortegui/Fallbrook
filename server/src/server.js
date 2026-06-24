@@ -7,8 +7,10 @@ import dbConnect from './util/dbConnect.util.js'
 import rootDir from "./util/dirname.util.js";
 
 import doctorRouter from "./route/doctor.router.js";
-import facilityRouter from './route/facility.router.js';
 import clinicRouter from './route/clinic.router.js';
+import medicalGroupRouter from './route/medicalGroup.router.js';
+import insuranceRouter from "./route/insurance.router.js";
+import radiologyRouter from "./route/radiologyCenter.router.js";
 
 dns.setServers(["1.1.1.1"]);  // this is for mongo `+svr` link DB
 
@@ -23,13 +25,16 @@ server.listen(PORT, ready)
 
 console.log(rootDir)
 
-//middleware
+//middleware en este orden
+server.use(morgan("dev"))
 server.use(express.json())
 // server.use(express.urlencoded({ extended: true }));
 server.use(express.static(join(rootDir, "public")))
-server.use(morgan("dev"))
 
-server.get('/', (req,res) => res.send("hola"))
-server.use("/api/facilities", facilityRouter);
-server.use("/api/clinics", clinicRouter);
+// Health check
+server.get('/', (req,res) => res.send("🏥 API Buscador de Doctores funcionando"))
 server.use("/api/doctors", doctorRouter);
+server.use("/api/clinics", clinicRouter);
+server.use("/api/medical-groups", medicalGroupRouter);
+server.use("/api/insurances", insuranceRouter);
+server.use("/api/radiology-centers", radiologyRouter);
