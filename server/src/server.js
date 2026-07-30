@@ -35,6 +35,6 @@ server.use(express.static(join(rootDir, "public")))
 server.get('/', (req,res) => res.send("🏥 API Buscador de Doctores funcionando"))
 server.use("/api/doctors", doctorRouter);
 server.use("/api/clinics", clinicRouter);
-server.use("/api/medical-groups", medicalGroupRouter);
+server.use("/api/medical-groups", medicalGroupRouter);  //1
 server.use("/api/insurances", insuranceRouter);
 server.use("/api/radiology-centers", radiologyRouter);

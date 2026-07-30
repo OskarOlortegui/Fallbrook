@@ -14,7 +14,7 @@ const insuranceSchema = new Schema({
         type: String,
         // Ej: "CHG", "Optum" — para mostrar en badges y filtros del UI
     },
-    slug: {
+    slug: { // Un slug es una versión de un texto convertida en una cadena limpia, amigable con las URL, en minúsculas y sin caracteres especiales ni espacios (sustituidos por guiones -).
         type: String,
         required: true,
         unique: true,

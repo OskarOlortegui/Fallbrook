@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx nodemon ./src/server.js",
-    "seed:insurances": "node src/script/insurance.seed.js"
+    "seed:insurances": "node script/insurance.seed.js"
   },
   "keywords": [],
   "author": "",
