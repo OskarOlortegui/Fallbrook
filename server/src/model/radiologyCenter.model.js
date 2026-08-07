@@ -9,8 +9,8 @@ const locationSchema = new Schema({
     city:     { type: String, required: true, index: true },
     state:    { type: String, default: "CA" },
     zipCode:  { type: String },
-    phone:    { type: String },
-    fax:      { type: String },
+    phones: { type: [String], default: [] },
+    faxes:  { type: [String], default: [] }
 })
 
 const radiologyCenterSchema = new Schema({

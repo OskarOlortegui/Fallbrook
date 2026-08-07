@@ -13,8 +13,8 @@ const medicalGroupSchema = new Schema({
         index: true 
     },
     tin: { type: String }, // Tax ID del grupo
-    phone: { type: String },
-    fax: {type: String},
+    phones: { type: [String], default: [] },
+    faxes:  { type: [String], default: [] },
     website: { type: String },
     // NUEVO: Historial de notas o noticias
     notes: [noteSchema], 

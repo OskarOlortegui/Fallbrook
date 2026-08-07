@@ -1,12 +1,13 @@
 // seeds/insurance.seed.js
 // Ejecutar UNA sola vez para poblar la colección Insurance
-// desde tu array INSURANCES existente
+// ruta/server en gitbash luego `npm run seed:insurances`
 //
 // Uso: node seeds/insurance.seed.js
 import "dotenv/config.js"
 import dns from "node:dns/promises";
 import {connect} from 'mongoose'
-import Insurance from '../src/model/insurance.model.js'
+import Insurance from '../src/model/insurance.model.js';
+
 dns.setServers(["1.1.1.1"]);
 
 const INSURANCES_SEED = [
@@ -27,9 +28,6 @@ const INSURANCES_SEED = [
     { name: "Blue Cross",                       shortName: "Blue Cross",  slug: "blue-cross",     type: "commercial" },
     { name: "TriCare",                          shortName: "TriCare",     slug: "tricare",        type: "government" },
     { name: "Workers' Comp",                    shortName: "W-Comp",      slug: "workers-comp",   type: "workers-comp" },
-    { name: "Prospect",                         shortName: "Prospect",    slug: "prospect",       type: "managed-care" },
-    { name: "Regal",                            shortName: "Regal",       slug: "regal",          type: "managed-care" },
-    { name: "PCAC",                             shortName: "PCAC",        slug: "pcac",           type: "managed-care" },
     { name: "Self Pay",                         shortName: "Self Pay",    slug: "selfpay",        type: "selfpay" },
     { name: "Empire Healthcare",                shortName: "Empire",      slug: "empire",         type: "managed-care" },
     { name: "Optum",                            shortName: "Optum",       slug: "optum",          type: "commercial" },
@@ -68,3 +66,8 @@ const seed = async () => {
 }
 
 seed();
+
+/* they were removes they are medical group not insurances */
+//{ name: "Prospect",                         shortName: "Prospect",    slug: "prospect",       type: "managed-care" },
+    //{ name: "Regal",                            shortName: "Regal",       slug: "regal",          type: "managed-care" },
+    //{ name: "PCAC",                             shortName: "PCAC",        slug: "pcac",           type: "managed-care" },

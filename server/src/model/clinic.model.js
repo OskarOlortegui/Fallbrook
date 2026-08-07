@@ -27,8 +27,8 @@ const clinicSchema = new Schema({
         default: "CA" //California
     },
     zipCode: { type: String },
-    phone: { type: String },
-    fax: { type: String },
+    phones: { type: [String], default: [] },
+    faxes:  { type: [String], default: [] },
     tin: { type: String }, // Tax ID específico de esa locación
     // NUEVO: Historial de notas o noticias
     notes: [noteSchema], 

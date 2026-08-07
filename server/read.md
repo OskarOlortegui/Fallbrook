@@ -59,3 +59,9 @@ La regla de oro en Express es: Las rutas estáticas (rutas fijas) SIEMPRE van an
 en - // POST /api/doctors/:id/medicalGroups/:mgId
 $addToSet funciona como un "Conjunto" matemático: Solo añade el mgId si este no existe previamente en el array medicalGroups. 
 Si el doctor ya pertenecía a ese grupo médico, MongoDB ignora la operación silenciosamente y no duplica los datos. ¡Es ultra eficiente!
+
+
+-- 
+PORT=8080
+SECRET=secret
+LINK_DB=mongodb+srv://fallbrook_db_user:yuWZXx53AlyPztxW@cluster0.xny5w9q.mongodb.net/fallbrook_db

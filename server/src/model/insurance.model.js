@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose'
+import { noteSchema } from './utils.model.js'  
 
 const collection = 'Insurance'
 
@@ -31,7 +32,10 @@ const insuranceSchema = new Schema({
         type: Boolean,
         default: true,
         index: true
-    }
+    },
+    phones: { type: [String], default: [] },
+    faxes:  { type: [String], default: [] },
+    notes:  [noteSchema]
 }, { timestamps: true })
 
 const Insurance = model(collection, insuranceSchema)
