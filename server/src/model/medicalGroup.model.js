@@ -1,5 +1,3 @@
-// models/facility.model.js  
-// ❗ No es una jerarquía estricta, es una red de relaciones opcionales este es el #1
 import {Schema, model} from 'mongoose';
 import { noteSchema } from './utils.model.js';
 

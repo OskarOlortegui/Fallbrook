@@ -3,6 +3,7 @@ import {
     medicalGroupsManager,
     clinicsManager
 } from '../data/manager.mongo.js'
+import { DoctorInsurance } from '../model/pivots.model.js'
 
 // ============ CRUD BÁSICO ============
 export const createDoctor = async (req,res) => { 
@@ -43,11 +44,34 @@ export const getDoctors = async (req,res) => {
 // GET /api/doctors/:id
 export const getDoctorById = async (req, res) => {
     try {
-        const doctor = await doctorsManager.readById(req.params.id, "clinics medicalGroups")
+         const doctor = await doctorsManager.readById(req.params.id, "clinics medicalGroups")
         if (!doctor) {
-            return res.status(404).json({ success: false, errors: { message: "Doctor not found" } })
+            return res.status(404).json({ 
+                success: false, 
+                errors: { message: "Doctor not found" } 
+            })
         }
-        res.status(200).json({ success: true, data: doctor })
+
+        // Traemos los seguros del pivot con datos útiles
+        const insurancePivots = await DoctorInsurance
+            .find({ doctor: req.params.id })
+            .populate('insurance', 'name shortName slug phones')
+            .sort({ createdAt: -1 })
+
+        // Formateamos solo lo que el frontend necesita
+        const insurances = insurancePivots.map(p => ({
+            name:      p.insurance.name,
+            shortName: p.insurance.shortName,
+            slug:      p.insurance.slug,
+            phones:    p.insurance.phones,
+            status:    p.status,
+            since:     p.effectiveDate
+        }))
+
+        res.status(200).json({ 
+            success: true, 
+            data: { ...doctor, insurances } 
+        })
     } catch (err) {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
