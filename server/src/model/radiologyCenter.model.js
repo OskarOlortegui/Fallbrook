@@ -5,10 +5,18 @@ const collection = 'RadiologyCenter'
 
 // Cada centro puede tener varios locales (ej: RadNet tiene múltiples ubicaciones)
 const locationSchema = new Schema({
+    LocationName: { 
+        type: String, 
+        required: false,  // ← no required, porque RadNet simplemente usa la ciudad
+        index: false      // ← no necesita index, no buscamos por nombre de location
+        // Ej: "Carlsbad Imaging Center", "Imperial Radiology"
+    },
     address:  { type: String, required: true },
     city:     { type: String, required: true, index: true },
     state:    { type: String, default: "CA" },
     zipCode:  { type: String },
+    website:   { type: String },
+    email: { type: String },
     phones: { type: [String], default: [] },
     faxes:  { type: [String], default: [] }
 })
@@ -21,12 +29,13 @@ const radiologyCenterSchema = new Schema({
         index: true
         // Ej: "RadNet", "IHS", "Valley Radiology"
     },
+    npi: { type: String },
+    tin: { type: String }, 
     accountNo: {
         type: String,
         // Tu número de cuenta con ellos (Fallbrook Medical Center)
         // Cuando llamas y te lo piden, este es el dato
     },
-    website:   { type: String },
     notes:     [noteSchema],
     locations: [locationSchema],  // Cada local tiene su propio phone y fax
     status: {

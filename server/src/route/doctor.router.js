@@ -8,6 +8,7 @@ import {
     deleteAllDoctors,
     deleteDoctor,
     addDoctorNote,
+    removeDoctorNote,
     addMedicalGroupToDoctor,
     removeMedicalGroupFromDoctor,
     addClinicToDoctor,
@@ -35,6 +36,8 @@ doctorRouter.delete("/:id", isValidId, deleteDoctor)
 
 // POST /api/doctors/:id/notes
 doctorRouter.post("/:id/notes", isValidId, addDoctorNote)
+// DELETE /api/doctors/:id/notes/:noteId
+doctorRouter.delete("/:id/notes/:noteId", isValidId, removeDoctorNote)
 
 // ============ MEDICAL GROUPS ============
  

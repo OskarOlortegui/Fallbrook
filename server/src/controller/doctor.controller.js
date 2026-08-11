@@ -143,6 +143,18 @@ export const addDoctorNote = async (req, res) => {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }
+export const removeDoctorNote = async (req, res) => {
+    try {
+        const { id, noteId } = req.params
+        const updated = await doctorsManager.removeNote(id, noteId)
+        if (!updated) {
+            return res.status(404).json({ success: false, errors: { message: "Doctor not found" } })
+        }
+        res.status(200).json({ success: true, message: "Note removed successfully", data: updated })
+    } catch (err) {
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
 
 // ============ MEDICAL GROUPS ============
 // POST /api/doctors/:id/medicalGroups/:mgId

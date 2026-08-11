@@ -53,6 +53,14 @@ class Manager {
     ).setOptions({ includeDeleted: true }).lean();
   };
 
+  removeNote = async (id, noteId) => {
+    return await this.model.findByIdAndUpdate(
+        id,
+        { $pull: { notes: { _id: noteId } } },
+        { returnDocument: 'after', runValidators: true }
+    ).setOptions({ includeDeleted: true }).lean()
+  }
+
   /* Delete All testing - rebooting DB */
   deleteAll = async () => await this.model.deleteMany({});
   }

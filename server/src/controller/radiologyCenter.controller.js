@@ -17,7 +17,7 @@ export const getRadiologyCenters = async (req, res) => {
         const { name, city, includeDeleted } = req.query
         let filter = {}
 
-        if (name)           filter.name              = new RegExp(name, 'i')
+        if (name)           filter.name               = new RegExp(name, 'i')
         if (city)           filter['locations.city'] = new RegExp(city, 'i')
         if (includeDeleted) filter.includeDeleted     = true
 

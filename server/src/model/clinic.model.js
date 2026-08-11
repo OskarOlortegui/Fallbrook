@@ -6,6 +6,7 @@ const collection = 'Clinic';
 const clinicSchema = new Schema({
     name: {
         type: String,
+        unique: true, 
         required: true
     },
     medicalGroup: {  // NUEVO: Para saber si esta sede pertenece a un grupo (ej: "RadNet" o "Alliance")
@@ -29,6 +30,7 @@ const clinicSchema = new Schema({
     zipCode: { type: String },
     phones: { type: [String], default: [] },
     faxes:  { type: [String], default: [] },
+    website: { type: String },
     tin: { type: String }, // Tax ID específico de esa locación
     // NUEVO: Historial de notas o noticias
     notes: [noteSchema], 

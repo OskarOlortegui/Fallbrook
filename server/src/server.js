@@ -33,8 +33,8 @@ server.use(express.static(join(rootDir, "public")))
 
 // Health check
 server.get('/', (req,res) => res.send("🏥 API Buscador de Doctores funcionando"))
-server.use("/api/doctors", doctorRouter);
-server.use("/api/clinics", clinicRouter);
-server.use("/api/medical-groups", medicalGroupRouter);
-server.use("/api/insurances", insuranceRouter);
-server.use("/api/radiology-centers", radiologyRouter);
+server.use("/api/doctors", doctorRouter); //3
+server.use("/api/clinics", clinicRouter); //7
+server.use("/api/medical-groups", medicalGroupRouter); //3
+server.use("/api/insurances", insuranceRouter); //20
+server.use("/api/radiology-centers", radiologyRouter); //3
