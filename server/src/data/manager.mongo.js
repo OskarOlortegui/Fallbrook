@@ -43,8 +43,11 @@ class Manager {
   // NUEVO MÉTODO: Agregar una nota sin borrar las anteriores
   addNote = async (id, noteData) => {
     /* doc hace referencia a 1 doctor, 1 clinica, 1 medGroup ... etc */
-      const doc = await this.model.findOne({ _id: id, status: { $ne: "deleted" } }).setOptions({ includeDeleted: true }); //ver en modelos el Schema.pre(/^find/
-      if (!doc) throw new Error("Document not found or deleted"); // Verifica que no esté deleted antes de agregar nota
+      const doc = await this.model.findOne({ 
+        _id: id,  // La lógica es: "No tiene sentido agregar una nota a un doctor/clinic/etc que ya fue desactivado".
+        status: { $ne: "deleted" }}) //$ne = not equal; Verifica que el Doctor/Clinic/etc no esté soft deleted — no la nota
+        .setOptions({ includeDeleted: true }); //ver en modelos el Schema.pre(/^find/
+      if (!doc) throw new Error(`${this.model.modelName} not found or is deleted`) // Verifica que no esté deleted antes de agregar nota
 
     return await this.model.findByIdAndUpdate(
       id,

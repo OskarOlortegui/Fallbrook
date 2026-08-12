@@ -60,19 +60,6 @@ en - // POST /api/doctors/:id/medicalGroups/:mgId
 $addToSet funciona como un "Conjunto" matemático: Solo añade el mgId si este no existe previamente en el array medicalGroups. 
 Si el doctor ya pertenecía a ese grupo médico, MongoDB ignora la operación silenciosamente y no duplica los datos. ¡Es ultra eficiente!
 
-* 08.11.26 
-pivots model necesitan el "unique true" ?
-falta que en los controladores de POST, al crear uno nuevo aplicar un filtro que si este "unique" esta repetido
-no se cree o de por si mongo DB ya va a lanzar un error por si solo? aunque de ser asi
-creo debemos PERSONALIZAR el error message, verdad?
-
-como clinics NO NO NO tenia el   
-name: {
-        unique: true, // significa que debemos hacer un PUT creo o PATCH (aun no se la diferencia)
-        para agregar esa propiedad pero antes ELIMINAR PARA SIEMPRE nononono NO soft delete
-        si no para siempre los datos "test" de clinicas que creamos
-
-
 -- 
 PORT=8080
 SECRET=secret
