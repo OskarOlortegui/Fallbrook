@@ -8,7 +8,8 @@ import {
     updateMedicalGroup,
     deleteAllMedicalGroups,
     deleteMedicalGroup,
-    addMedicalGroupNote
+    addMedicalGroupNote,
+    removeMedicalGroupNote
 } from '../controller/medicalGroup.controller.js'
 
 const medicalGroupRouter = Router();
@@ -34,6 +35,10 @@ medicalGroupRouter.put("/:id", isValidId, updateMedicalGroup)
 // DELETE /api/medical-groups/:id  (soft delete)
 medicalGroupRouter.delete("/:id", isValidId, deleteMedicalGroup);
 
+// ============ NOTAS ============
 // POST /api/medical-groups/:id/notes
 medicalGroupRouter.post("/:id/notes", isValidId, addMedicalGroupNote)
+// DELETE /api/medical-groups/:id/notes/:noteId
+medicalGroupRouter.delete("/:id/notes/:noteId", isValidId, removeMedicalGroupNote)
+
 export default medicalGroupRouter;

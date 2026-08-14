@@ -1,4 +1,4 @@
-import { clinicsManager, doctorsManager } from '../data/manager.mongo.js'
+import { clinicsManager, doctorsManager, medicalGroupsManager  } from '../data/manager.mongo.js'
 
 // ============ CRUD BÁSICO ============
 
@@ -28,7 +28,7 @@ export const getClinics = async (req, res) => {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }
-// GET /api/clinics/:id
+// GET /api/clinics/:id   (si si popula el medicalGroup todo ok)
 export const getClinicById = async (req, res) => {
     try {
         const clinic = await clinicsManager.readById(req.params.id, "medicalGroup")
@@ -109,6 +109,54 @@ export const addClinicNote = async (req, res) => {
         if (err.message.includes("not found")) {
             return res.status(404).json({ success: false, errors: { message: err.message } })
         }
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
+// DELETE /api/clinics/:id/notes/:noteId
+export const removeClinicNote = async (req, res) => {
+    try {
+        const { id, noteId } = req.params
+        const updated = await clinicsManager.removeNote(id, noteId)
+        if (!updated) {
+            return res.status(404).json({ success: false, errors: { message: "Doctor not found" } })
+        }
+        res.status(200).json({ success: true, message: "Note removed successfully", data: updated })
+    } catch (err) {
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
+
+// ============ MEDICAL GROUPS ============
+// POST /api/clinics/:id/medicalGroup/:mgId
+export const addMedicalGroupToClinic = async (req, res) => {
+    try {
+        const { id, mgId } = req.params
+
+        const mg = await medicalGroupsManager.readById(mgId)
+        if (!mg) return res.status(404).json({ success: false, errors: { message: "Medical Group not found" } })
+
+        const clinic = await clinicsManager.readById(id)
+        if (!clinic) return res.status(404).json({ success: false, errors: { message: "Clinic not found" } })
+
+        const updated = await clinicsManager.updateById(id, { medicalGroup: mgId })
+
+        res.status(200).json({ success: true, message: "Medical Group assigned successfully", data: updated })
+    } catch (err) {
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
+// DELETE /api/clinics/:id/medicalGroup 
+export const removeMedicalGroupFromClinic = async (req, res) => {
+    try {
+        const { id } = req.params
+
+        const clinic = await clinicsManager.readById(id)
+        if (!clinic) return res.status(404).json({ success: false, errors: { message: "Clinic not found" } })
+        if (!clinic.medicalGroup) return res.status(400).json({ success: false, errors: { message: "Clinic has no Medical Group assigned" } })
+
+        const updated = await clinicsManager.updateById(id, { medicalGroup: null })
+        res.status(200).json({ success: true, message: "Medical Group removed successfully", data: updated })
+    } catch (err) {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }

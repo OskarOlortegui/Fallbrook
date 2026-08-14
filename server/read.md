@@ -64,3 +64,8 @@ Si el doctor ya pertenecía a ese grupo médico, MongoDB ignora la operación si
 PORT=8080
 SECRET=secret
 LINK_DB=mongodb+srv://fallbrook_db_user:yuWZXx53AlyPztxW@cluster0.xny5w9q.mongodb.net/fallbrook_db
+
+
+08.13.26 
+- addDoctorNote, removeDoctorNote para clincis tbm en clinic.controller
+es el mismo mismo mismo codigo.

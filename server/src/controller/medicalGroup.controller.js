@@ -116,7 +116,7 @@ export const deleteMedicalGroup = async (req, res) => {
 }
 
 // ============ NOTAS ============
-
+// POST /api/medical-groups/:id/notes
 export const addMedicalGroupNote = async (req, res) => {
     try {
         const updated = await medicalGroupsManager.addNote(req.params.id, req.body)
@@ -125,6 +125,19 @@ export const addMedicalGroupNote = async (req, res) => {
         if (err.message.includes("not found")) {
             return res.status(404).json({ success: false, errors: { message: err.message } })
         }
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
+// DELETE /api/medical-groups/:id/notes/:noteId
+export const removeMedicalGroupNote = async (req, res) => {
+    try {
+        const { id, noteId } = req.params
+        const updated = await medicalGroupsManager.removeNote(id, noteId)
+        if (!updated) {
+            return res.status(404).json({ success: false, errors: { message: "Doctor not found" } })
+        }
+        res.status(200).json({ success: true, message: "Note removed successfully", data: updated })
+    } catch (err) {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }
