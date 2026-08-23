@@ -97,6 +97,33 @@ const medicalGroupInsuranceSchema = new Schema({
 }, { timestamps: true })
 
 medicalGroupInsuranceSchema.index({ medicalGroup: 1, insurance: 1 }, { unique: true })
+// ─────────────────────────────────────────────
+//  RADIOLOGY CENTER ↔ Medical Group *Prospect PCAC Regal
+// ─────────────────────────────────────────────
+const medicalGroupRadiologyCenterSchema = new Schema({
+    medicalGroup: {
+        type: Schema.Types.ObjectId,
+        ref: 'MedicalGroup',
+        required: true,
+        index: true
+    },
+    radiologyCenter: {
+        type: Schema.Types.ObjectId,
+        ref: 'RadiologyCenter',
+        required: true,
+        index: true
+    },
+    status: {
+        type: String,
+        enum: STATUS_ENUM,
+        default: "verified",
+        index: true
+    },
+    effectiveDate: { type: Date, default: Date.now },
+    notes: { type: String, default: "" }
+}, { timestamps: true })
+
+medicalGroupRadiologyCenterSchema.index({ medicalGroup: 1, radiologyCenter: 1 }, {unique: true })
 
 
 // ─────────────────────────────────────────────
@@ -105,7 +132,7 @@ medicalGroupInsuranceSchema.index({ medicalGroup: 1, insurance: 1 }, { unique: t
 const radiologyCenterInsuranceSchema = new Schema({
     radiologyCenter: {
         type: Schema.Types.ObjectId,
-        ref: 'RadiologyCenter',
+        ref: 'RadiologyCenter', 
         required: true,
         index: true
     },
@@ -134,4 +161,5 @@ radiologyCenterInsuranceSchema.index({ radiologyCenter: 1, insurance: 1 }, { uni
 export const DoctorInsurance         = model('DoctorInsurance',         doctorInsuranceSchema)
 export const ClinicInsurance         = model('ClinicInsurance',         clinicInsuranceSchema)
 export const MedicalGroupInsurance   = model('MedicalGroupInsurance',   medicalGroupInsuranceSchema)
+export const MedicalGroupRadiologyCenter = model('MedicalGroupRadiologyCenter', medicalGroupRadiologyCenterSchema)
 export const RadiologyCenterInsurance = model('RadiologyCenterInsurance', radiologyCenterInsuranceSchema)

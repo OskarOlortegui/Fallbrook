@@ -36,5 +36,5 @@ server.get('/', (req,res) => res.send("🏥 API Buscador de Doctores funcionando
 server.use("/api/doctors", doctorRouter); //3
 server.use("/api/clinics", clinicRouter); //7
 server.use("/api/medical-groups", medicalGroupRouter); //3
-server.use("/api/insurances", insuranceRouter); //20
+server.use("/api/insurances", insuranceRouter); //20 TIENE LOS PIVOTS
 server.use("/api/radiology-centers", radiologyRouter); //3

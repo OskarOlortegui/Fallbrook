@@ -1,4 +1,5 @@
 import { radiologyCentersManager } from '../data/manager.mongo.js'
+import { MedicalGroupRadiologyCenter } from '../model/pivots.model.js'
 
 // ============ CRUD BÁSICO ============
 
@@ -34,7 +35,24 @@ export const getRadiologyCenterById = async (req, res) => {
         if (!center) {
             return res.status(404).json({ success: false, errors: { message: 'Radiology Center not found' } })
         }
-        res.status(200).json({ success: true, data: center })
+
+        // Traemos los medical groups vinculados
+        const pivots = await MedicalGroupRadiologyCenter
+            .find({ radiologyCenter: req.params.id, status: "verified" })
+            .populate('medicalGroup', 'name phones website status')
+
+        const medicalGroups = pivots.map(p => ({
+            name:    p.medicalGroup.name,
+            phones:  p.medicalGroup.phones,
+            website: p.medicalGroup.website,
+            status:  p.status,
+            since:   p.effectiveDate
+        }))
+
+        res.status(200).json({ 
+            success: true, 
+            data: { ...center, medicalGroups } 
+        })
     } catch (err) {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }

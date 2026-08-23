@@ -11,7 +11,7 @@ import MedicalGroup from '../model/medicalGroup.model.js'
 import RadiologyCenter from '../model/radiologyCenter.model.js'
 
 // ============ CRUD BÁSICO ============
-
+//  GET /insurances
 export const getInsurances = async (req, res) => {
     try {
         const insurances = await Insurance.find({ active: true }).sort({ name: 1 })
@@ -20,7 +20,7 @@ export const getInsurances = async (req, res) => {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }
-
+//  POST /insurances
 export const createInsurance = async (req, res) => {
     try {
         const insurance = new Insurance(req.body)
@@ -30,7 +30,7 @@ export const createInsurance = async (req, res) => {
         res.status(400).json({ success: false, errors: { message: err.message } })
     }
 }
-
+//  PATCH /insurances/:id
 export const updateInsurance = async (req, res) => {
     try {
         const insurance = await Insurance.findByIdAndUpdate(
@@ -46,7 +46,7 @@ export const updateInsurance = async (req, res) => {
         res.status(400).json({ success: false, errors: { message: err.message } })
     }
 }
-
+//  DELETE /insurances/:id (soft delete)
 export const deactivateInsurance = async (req, res) => {
     try {
         const insurance = await Insurance.findByIdAndUpdate(
@@ -158,7 +158,7 @@ export const getInsuranceBySlug = async (req, res) => {
 }
 
 // ============ PIVOT — DOCTOR ============
-
+// POST /api/insurances/pivot/doctor
 export const addDoctorToInsurance = async (req, res) => {
     try {
         const { doctorId, insuranceId, status, notes } = req.body
@@ -182,7 +182,7 @@ export const addDoctorToInsurance = async (req, res) => {
         res.status(400).json({ success: false, errors: { message: err.message } })
     }
 }
-
+// GET /api/insurances/pivot/doctor/:doctorId
 export const getDoctorInsurances = async (req, res) => {
     try {
         const doctor = await Doctor.findById(req.params.doctorId)
@@ -200,7 +200,8 @@ export const getDoctorInsurances = async (req, res) => {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }
-
+ 
+// DELETE /api/insurances/pivot/doctor/:doctorId/:insuranceId
 export const removeDoctorFromInsurance = async (req, res) => {
     try {
         const { doctorId, insuranceId } = req.params
@@ -223,7 +224,7 @@ export const removeDoctorFromInsurance = async (req, res) => {
 }
 
 // ============ PIVOT — CLINIC ============
-
+// POST /insurances/pivot/clinic
 export const addClinicToInsurance = async (req, res) => {
     try {
         const { clinicId, insuranceId, status, notes } = req.body
@@ -249,7 +250,7 @@ export const addClinicToInsurance = async (req, res) => {
 }
 
 // ============ PIVOT — MEDICAL GROUP ============
-
+// POST /insurances/pivot/medical-group
 export const addMedicalGroupToInsurance = async (req, res) => {
     try {
         const { medicalGroupId, insuranceId, status, notes } = req.body
@@ -275,7 +276,7 @@ export const addMedicalGroupToInsurance = async (req, res) => {
 }
 
 // ============ PIVOT — RADIOLOGY CENTER ============
-
+// POST /insurances/pivot/radiology-center
 export const addRadiologyCenterToInsurance = async (req, res) => {
     try {
         const { radiologyCenterId, insuranceId, status, notes } = req.body

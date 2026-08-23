@@ -18,13 +18,9 @@ const insuranceRouter = Router()
 
 // ─────────────────────────────────────────────
 //  GET /insurances
-//  Lista todos los seguros activos
-// ─────────────────────────────────────────────
-
 insuranceRouter.get('/', getInsurances)
 // ─────────────────────────────────────────────
-//  POST /insurances
-//  Body: { name, shortName, slug, type }
+//  POST /insurances  Body: { name, shortName, slug, type }
 //  Ej: POST /insurances
 //      { "name": "Optum", "shortName": "Optum", "slug": "optum", "type": "commercial" }
 // ─────────────────────────────────────────────
@@ -51,7 +47,7 @@ insuranceRouter.delete('/pivot/doctor/:doctorId/:insuranceId', isValidId, remove
 
 // POST /insurances/pivot/clinic
 // Body: { clinicId, insuranceId, status, notes }
-insuranceRouter.post('/pivot/clinic', addClinicToInsurance  ) 
+insuranceRouter.post('/pivot/clinic', addClinicToInsurance) 
 
 // POST /insurances/pivot/medical-group
 // Body: { medicalGroupId, insuranceId, status, notes }

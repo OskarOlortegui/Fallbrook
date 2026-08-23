@@ -9,7 +9,10 @@ import {
     deleteAllMedicalGroups,
     deleteMedicalGroup,
     addMedicalGroupNote,
-    removeMedicalGroupNote
+    removeMedicalGroupNote,
+    addRadiologyCenterToMedicalGroup,
+    removeRadiologyCenterFromMedicalGroup,
+    getRadiologyCentersOfMedicalGroup
 } from '../controller/medicalGroup.controller.js'
 
 const medicalGroupRouter = Router();
@@ -40,5 +43,14 @@ medicalGroupRouter.delete("/:id", isValidId, deleteMedicalGroup);
 medicalGroupRouter.post("/:id/notes", isValidId, addMedicalGroupNote)
 // DELETE /api/medical-groups/:id/notes/:noteId
 medicalGroupRouter.delete("/:id/notes/:noteId", isValidId, removeMedicalGroupNote)
+
+// ============ RADIOLOGY CENTERS ============
+
+// POST /api/medical-groups/:id/radiology-centers/:rcId
+medicalGroupRouter.post("/:id/radiology-centers/:rcId", isValidId, addRadiologyCenterToMedicalGroup)
+// DELETE /api/medical-groups/:id/radiology-centers/:rcId
+medicalGroupRouter.delete("/:id/radiology-centers/:rcId", isValidId, removeRadiologyCenterFromMedicalGroup) 
+// GET /api/medical-groups/:id/radiology-centers
+medicalGroupRouter.get("/:id/radiology-centers", isValidId, getRadiologyCentersOfMedicalGroup)
 
 export default medicalGroupRouter;

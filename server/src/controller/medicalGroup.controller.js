@@ -1,4 +1,6 @@
-import { medicalGroupsManager, clinicsManager, doctorsManager } from '../data/manager.mongo.js'
+import { medicalGroupsManager, clinicsManager, doctorsManager, radiologyCentersManager } from '../data/manager.mongo.js'
+import RadiologyCenter from '../model/radiologyCenter.model.js'
+import { MedicalGroupRadiologyCenter } from '../model/pivots.model.js'
 
 // ============ CRUD BÁSICO ============
 // POST /api/medical-groups
@@ -32,7 +34,24 @@ export const getMedicalGroupById = async (req, res) => {
         if (!group) {
             return res.status(404).json({ success: false, errors: { message: "Medical Group not found" } })
         }
-        res.status(200).json({ success: true, data: group })
+
+        // Traemos los radiology centers vinculados
+        const pivots = await MedicalGroupRadiologyCenter
+            .find({ medicalGroup: req.params.id, status: "verified" })
+            .populate('radiologyCenter', 'name locations website status')
+
+        const radiologyCenters = pivots.map(p => ({
+            name:      p.radiologyCenter.name,
+            locations: p.radiologyCenter.locations,
+            website:   p.radiologyCenter.website,
+            status:    p.status,
+            since:     p.effectiveDate
+        }))
+
+        res.status(200).json({ 
+            success: true, 
+            data: { ...group, radiologyCenters } 
+        })
     } catch (err) {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
@@ -137,6 +156,68 @@ export const removeMedicalGroupNote = async (req, res) => {
             return res.status(404).json({ success: false, errors: { message: "Doctor not found" } })
         }
         res.status(200).json({ success: true, message: "Note removed successfully", data: updated })
+    } catch (err) {
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
+
+// ============ RADIOLOGY CENTERS ============
+
+// POST /api/medical-groups/:id/radiology-centers/:rcId
+export const addRadiologyCenterToMedicalGroup = async (req, res) => {
+    try {
+        const { id, rcId } = req.params
+
+        const group = await medicalGroupsManager.readById(id)
+        if (!group) return res.status(404).json({ success: false, errors: { message: "Medical Group not found" } })
+
+        const center = await radiologyCentersManager.readById(rcId)
+        if (!center) return res.status(404).json({ success: false, errors: { message: "Radiology Center not found" } })
+
+        const pivot = await MedicalGroupRadiologyCenter.findOneAndUpdate(
+            { medicalGroup: id, radiologyCenter: rcId },
+            { status: "verified", effectiveDate: new Date() },
+            { upsert: true, new: true, runValidators: true }
+        )
+
+        res.status(201).json({ success: true, message: "Radiology Center linked successfully", data: pivot })
+    } catch (err) {
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
+
+// DELETE /api/medical-groups/:id/radiology-centers/:rcId
+export const removeRadiologyCenterFromMedicalGroup = async (req, res) => {
+    try {
+        const { id, rcId } = req.params
+
+        const pivot = await MedicalGroupRadiologyCenter.findOneAndDelete({
+            medicalGroup: id,
+            radiologyCenter: rcId
+        })
+
+        if (!pivot) return res.status(404).json({ success: false, errors: { message: "Relationship not found" } })
+
+        res.status(200).json({ success: true, message: "Radiology Center unlinked successfully" })
+    } catch (err) {
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
+
+// GET /api/medical-groups/:id/radiology-centers
+export const getRadiologyCentersOfMedicalGroup = async (req, res) => {
+    try {
+        const { id } = req.params
+
+        const group = await medicalGroupsManager.readById(id)
+        if (!group) return res.status(404).json({ success: false, errors: { message: "Medical Group not found" } })
+
+        const pivots = await MedicalGroupRadiologyCenter
+            .find({ medicalGroup: id, status: "verified" })
+            .populate('radiologyCenter', 'name locations website status')
+            .sort({ createdAt: -1 })
+
+        res.status(200).json({ success: true, data: pivots })
     } catch (err) {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
