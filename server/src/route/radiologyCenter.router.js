@@ -7,7 +7,8 @@ import {
     updateRadiologyCenter,
     deleteAllRadiologyCenters,
     deleteRadiologyCenter,
-    addRadiologyCenterNote
+    addRadiologyCenterNote,
+    removeRadiologyCenterNote
 } from '../controller/radiologyCenter.controller.js'
  
 const radiologyRouter = Router()
@@ -37,5 +38,8 @@ radiologyRouter.delete('/:id', isValidId, deleteRadiologyCenter)
 
 // POST /api/radiology-centers/:id/notes
 radiologyRouter.post('/:id/notes', isValidId, addRadiologyCenterNote)
+// DELETE /api/radiology-centers/:id/notes/:noteId
+radiologyRouter.delete('/:id/notes/:noteId', isValidId, removeRadiologyCenterNote)
+
 
 export default radiologyRouter

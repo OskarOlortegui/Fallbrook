@@ -2,7 +2,7 @@ import { radiologyCentersManager } from '../data/manager.mongo.js'
 import { MedicalGroupRadiologyCenter } from '../model/pivots.model.js'
 
 // ============ CRUD BÁSICO ============
-
+// POST /api/radiology-centers
 export const createRadiologyCenter = async (req, res) => {
     try {
         const newCenter = await radiologyCentersManager.createOne(req.body)
@@ -11,7 +11,7 @@ export const createRadiologyCenter = async (req, res) => {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }
-
+// GET /api/radiology-centers
 // Query params: ?name=radnet  ?city=fallbrook  ?includeDeleted=true
 export const getRadiologyCenters = async (req, res) => {
     try {
@@ -28,7 +28,7 @@ export const getRadiologyCenters = async (req, res) => {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }
-
+// GET /api/radiology-centers/:id
 export const getRadiologyCenterById = async (req, res) => {
     try {
         const center = await radiologyCentersManager.readById(req.params.id)
@@ -57,7 +57,7 @@ export const getRadiologyCenterById = async (req, res) => {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }
-
+// PATCH /api/radiology-centers/:id
 export const updateRadiologyCenter = async (req, res) => {
     try {
         const updated = await radiologyCentersManager.updateById(req.params.id, req.body)
@@ -78,7 +78,7 @@ export const deleteAllRadiologyCenters = async (req, res) => {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }
-
+// DELETE /api/radiology-centers/:id  (soft delete)
 export const deleteRadiologyCenter = async (req, res) => {
     try {
         const { id } = req.params
@@ -108,7 +108,7 @@ export const deleteRadiologyCenter = async (req, res) => {
 }
 
 // ============ NOTAS ============
-
+// POST /api/radiology-centers/:id/notes
 export const addRadiologyCenterNote = async (req, res) => {
     try {
         const updated = await radiologyCentersManager.addNote(req.params.id, req.body)
@@ -117,6 +117,19 @@ export const addRadiologyCenterNote = async (req, res) => {
         if (err.message.includes('not found')) {
             return res.status(404).json({ success: false, errors: { message: err.message } })
         }
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
+// DELETE /api/radiology-centers/:id/notes/:noteId
+export const removeRadiologyCenterNote = async (req, res) => {
+    try {
+        const { id, noteId } = req.params
+        const updated = await radiologyCentersManager.removeNote(id, noteId)
+        if (!updated) {
+            return res.status(404).json({ success: false, errors: { message: "Radiology Center not found" } })
+        }
+        res.status(200).json({ success: true, message: "Note removed successfully", data: updated })
+    } catch (err) {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }
