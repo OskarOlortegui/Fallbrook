@@ -3,28 +3,28 @@ function initials(name) {
 }
 
 const STATUS_COLOR = {
-  verified: 'bg-(--success)',
-  pending:  'bg-yellow-400',
-  deleted:  'bg-(--danger)',
+  verified:         'bg-(--success)',
+  pending:          'bg-yellow-400',
+  'out-of-network': 'bg-orange-400',
+  deleted:          'bg-(--danger)',
 }
 
 export default function DoctorCard({ doctor }) {
-  const { name, specialty, npi, gender, status, address, phone, fax, insurances } = doctor
+  const { name, specialty, npi, gender, status, insurances = [] } = doctor
   const MAX_INS = 3
 
   return (
-    <div className="bg-(--surface) border border-(--border) rounded-xl p-4 hover:border-(--accent) transition-colors cursor-pointer">
+    <div className="bg-(--surface) border border-(--border) rounded-xl p-4 hover:border-(--accent) transition-colors">
+      {/* Top */}
       <div className="flex items-start gap-3 mb-3">
         <div className={`w-11 h-11 rounded-full flex items-center justify-center font-medium text-sm flex-shrink-0 ${
-          gender === 'female'
-            ? 'bg-pink-100 text-pink-700'
-            : 'bg-(--accent-bg) text-(--accent)'
+          gender === 'female' ? 'bg-pink-100 text-pink-700' : 'bg-(--accent-bg) text-(--accent)'
         }`}>
           {initials(name)}
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-(--text) leading-snug">{name}</p>
-          <p className="text-xs text-(--text2) mt-0.5">{specialty}</p>
+          <p className="text-xs text-(--text2) mt-0.5 capitalize">{specialty}</p>
           <p className="text-[11px] text-(--muted) mt-0.5 font-mono">NPI: {npi}</p>
         </div>
         <div
@@ -35,30 +35,35 @@ export default function DoctorCard({ doctor }) {
 
       <hr className="border-(--border) mb-3" />
 
-      <div className="space-y-1.5 text-xs text-(--text2)">
-        <p className="flex gap-1.5"><span className="text-(--muted)">📍</span>{address}</p>
-        <p className="flex gap-1.5"><span className="text-(--muted)">📞</span>{phone}</p>
-        <p className="flex gap-1.5"><span className="text-(--muted)">📠</span>{fax}</p>
-      </div>
-
-      <div className="flex flex-wrap gap-1 mt-3">
-        {insurances.slice(0, MAX_INS).map(ins => (
-          <span key={ins} className="text-[11px] px-2 py-0.5 rounded-full bg-(--accent-bg) text-(--accent) border border-(--border)">
-            {ins}
-          </span>
-        ))}
-        {insurances.length > MAX_INS && (
-          <span className="text-[11px] px-2 py-0.5 rounded-full bg-(--surface2) text-(--text2) border border-(--border)">
-            +{insurances.length - MAX_INS}
-          </span>
+      {/* Insurances */}
+      <div className="flex flex-wrap gap-1">
+        {insurances.length > 0 ? (
+          <>
+            {insurances.slice(0, MAX_INS).map(ins => (
+              <span
+                key={ins.slug ?? ins.name}
+                className="text-[11px] px-2 py-0.5 rounded-full bg-(--accent-bg) text-(--accent) border border-(--border)"
+              >
+                {ins.shortName ?? ins.name}
+              </span>
+            ))}
+            {insurances.length > MAX_INS && (
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-(--surface2) text-(--text2) border border-(--border)">
+                +{insurances.length - MAX_INS}
+              </span>
+            )}
+          </>
+        ) : (
+          <span className="text-[11px] text-(--muted) italic">No insurances</span>
         )}
       </div>
 
+      {/* Actions */}
       <div className="flex gap-2 mt-3">
-        <button className="flex-1 text-xs border border-(--border) rounded-lg py-1.5 text-(--text2) hover:bg-(--surface2)">
+        <button className="flex-1 text-xs border border-(--border) rounded-lg py-1.5 text-(--text2) hover:bg-(--surface2) cursor-pointer">
           📝 Note
         </button>
-        <button className="flex-1 text-xs bg-(--accent) text-white rounded-lg py-1.5 hover:opacity-90">
+        <button className="flex-1 text-xs bg-(--accent) text-white rounded-lg py-1.5 hover:opacity-90 cursor-pointer">
           View detail
         </button>
       </div>

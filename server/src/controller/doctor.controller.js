@@ -33,9 +33,55 @@ export const getDoctors = async (req,res) => {
               console.log("filtro por city pendiente de implementar con lookup")
             }
         
-            // Pasamos "clinics" para que rellene la info de las sedes
+            // Pasamos "clinics" y medicalgroups para que rellene la info 
             const doctors = await doctorsManager.readAll(filter, "clinics medicalGroups");
-            res.status(200).json({success: true, data: doctors});
+
+            // 2. Obtenemos los IDs de los doctores
+            const doctorIds = doctors.map(doctor => doctor._id)
+
+            // 3. Buscamos los pivots de TODOS los doctores de una sola vez
+            const insurancePivots = await DoctorInsurance
+            .find({doctor: { $in: doctorIds }}) //Dame todos los registros de DoctorInsurance cuyo doctor sea uno de estos doctores.
+            .populate('insurance','name shortName slug')
+
+
+            // 4. Agrupamos los seguros por doctor
+            const insurancesByDoctor = {}
+
+            insurancePivots.forEach(pivot => {
+                const doctorId = pivot.doctor.toString()
+
+                if (!insurancesByDoctor[doctorId]) {
+                    insurancesByDoctor[doctorId] = []
+                }
+
+                if (pivot.insurance) {
+                    insurancesByDoctor[doctorId].push({
+                    name: pivot.insurance.name,
+                    shortName: pivot.insurance.shortName,
+                    slug: pivot.insurance.slug
+                    })
+                }
+            })
+
+            // 5. Agregamos insurances a cada doctor
+            const doctorsWithInsurances = doctors.map(doctor => ({
+                ...doctor,
+                insurances: insurancesByDoctor[doctor._id.toString()] || []
+            }))
+            /* const doctorsWithInsurances = doctors.map(doctor => {
+                const doctorObject = doctor.toObject
+                    ? doctor.toObject()
+                    : doctor
+
+                return {
+                    ...doctorObject,
+                    insurances:
+                    insurancesByDoctor[doctor._id.toString()] || []
+                }
+            }) */
+
+            res.status(200).json({success: true, data: doctorsWithInsurances});
     } catch (err) {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }

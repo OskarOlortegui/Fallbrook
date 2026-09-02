@@ -2,6 +2,8 @@ import Topbar from '../components/Topbar'
 import CounterCard from '../components/CounterCard'
 import DoctorCard from '../components/DoctorCard'
 import MRFCard from '../components/MRFCard'
+import { useEffect, useState } from 'react'
+import { api } from '../services/api'
 
 // ── Datos hardcodeados (temporales hasta conectar la API) ──
 const COUNTERS = [
@@ -78,6 +80,31 @@ const MRF_LIST = [
 
 
 export default function Dashboard() {
+  /*  const [clinics, setClinics] = useState([])
+  const [medicalGroups, setMedicalGroups] = useState([])
+  const [insurances, setInsurances] = useState([])
+  const [radiology, setRadiology] = useState([]) */
+  
+  const [doctors, setDoctors] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    async function loadDoctors() {
+      try {
+        const data = await api.getDoctors() // data = {success, data}
+        console.log(data)
+        setDoctors(data.data)
+      } catch (error) {
+        console.error(error)
+        setError(error.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadDoctors()
+  }, [])
+  
   return (
     <div className="min-h-screen bg-(--bg) text-(--text)">
       <Topbar />
@@ -102,8 +129,10 @@ export default function Dashboard() {
           <button className="text-xs text-(--accent) hover:underline">See all →</button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-10">
-          {DOCTORS.map(d => (
-            <DoctorCard key={d.id} doctor={d} />
+          {loading && <p className="text-xs text-(--muted)">Loading...</p>}
+          {error   && <p className="text-xs text-(--danger)">{error}</p>}
+          {!loading && !error && doctors.map(d => (
+            <DoctorCard key={d._id} doctor={d} />
           ))}
         </div>
 
