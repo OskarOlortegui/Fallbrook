@@ -66,6 +66,20 @@ SECRET=secret
 LINK_DB=mongodb+srv://fallbrook_db_user:yuWZXx53AlyPztxW@cluster0.xny5w9q.mongodb.net/fallbrook_db
 
 
-08.13.26 
-- addDoctorNote, removeDoctorNote para clincis tbm en clinic.controller
-es el mismo mismo mismo codigo.
+09.06.26 ya NO NO NO PATCH /api/clinics/:id/increment-request
+Usuario entra a MRF
+        ↓
+ve Temecula Valley Hospital
+        ↓
+NO incrementa requestCount
+        ↓
+elige paciente
+        ↓
+Generate MRF PDF
+        ↓
+se crea la solicitud
+        ↓
+requestCount + 1
+
+PARA EL MRF NO NECESITO EL .populate(medicalgroup) porque yo quiero el fax, nombre del lugar
+luego formulario llenar el nombre del pt, el DOB, la fecha actual y el custome message "last discharge or er notes"

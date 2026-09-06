@@ -3,57 +3,9 @@ import CounterCard from '../components/CounterCard'
 import DoctorCard from '../components/DoctorCard'
 import MRFCard from '../components/MRFCard'
 import { useEffect, useState } from 'react'
-import { api } from '../services/api'
+import { useDashboardData } from '../hooks/useDashboardData'
 
 // ── Datos hardcodeados (temporales hasta conectar la API) ──
-const COUNTERS = [
-  { label: 'Doctors',     count: 3,  icon: '🩺' },
-  { label: 'Clinics',     count: 7,  icon: '🏥' },
-  { label: 'Groups',      count: 3,  icon: '🔗' },
-  { label: 'Insurances',  count: 20, icon: '🛡️' },
-  { label: 'Radiology',   count: 3,  icon: '☢️' },
-  { label: 'Do not refer',count: 0,  icon: '🚫', danger: true },
-]
-
-const DOCTORS = [
-  {
-    id: '1',
-    name: 'Naveen Gara',
-    specialty: 'Gastroenterology',
-    npi: '1942406533',
-    gender: 'male',
-    status: 'verified',
-    address: '935 E Pennsylvania Ave, Escondido, CA 92025',
-    phone: '(760) 690-2800',
-    fax: '949-404-6908',
-    insurances: ['CHG', 'Molina'],
-  },
-  {
-    id: '2',
-    name: 'Vishal Banthia',
-    specialty: 'Otolaryngology (ENT)',
-    npi: '1043396559',
-    gender: 'male',
-    status: 'verified',
-    address: '2390 Faraday Ave, Carlsbad, CA 92008',
-    phone: '858-909-0770',
-    fax: '858-909-0880',
-    insurances: ['CHG'],
-  },
-  {
-    id: '3',
-    name: 'Grigoriy Patish',
-    specialty: 'Podiatry',
-    npi: '1609817535',
-    gender: 'male',
-    status: 'verified',
-    address: '407 Potter St Suite A, Fallbrook, CA 92028',
-    phone: '760-728-4800',
-    fax: '760-728-0061',
-    insurances: ['Aetna', 'Health Net', 'Blue Shield', 'Self Pay'],
-  },
-]
-
 const MRF_LIST = [
   {
     id: '1',
@@ -78,32 +30,44 @@ const MRF_LIST = [
   },
 ]
 
-
 export default function Dashboard() {
-  /*  const [clinics, setClinics] = useState([])
-  const [medicalGroups, setMedicalGroups] = useState([])
-  const [insurances, setInsurances] = useState([])
-  const [radiology, setRadiology] = useState([]) */
-  
-  const [doctors, setDoctors] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+ const {
+    doctors,
+    clinics,
+    medicalGroups,
+    insurances,
+    radiology,
+    loading,
+    error
+  } = useDashboardData();
 
-  useEffect(() => {
-    async function loadDoctors() {
-      try {
-        const data = await api.getDoctors() // data = {success, data}
-        console.log(data)
-        setDoctors(data.data)
-      } catch (error) {
-        console.error(error)
-        setError(error.message)
-      } finally {
-        setLoading(false)
-      }
+  const counters = [
+    {
+      label: 'Doctors',
+      count: doctors.length,
+      icon: '🩺'
+    },
+    {
+      label: 'Clinics',
+      count: clinics.length,
+      icon: '🏥'
+    },
+    {
+      label: 'Groups',
+      count: medicalGroups.length,
+      icon: '🔗'
+    },
+    {
+      label: 'Insurances',
+      count: insurances.length,
+      icon: '🛡️'
+    },
+    {
+      label: 'Radiology',
+      count: radiology.length,
+      icon: '☢️'
     }
-    loadDoctors()
-  }, [])
+  ]
   
   return (
     <div className="min-h-screen bg-(--bg) text-(--text)">
@@ -118,7 +82,7 @@ export default function Dashboard() {
 
         {/* Contadores */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-10">
-          {COUNTERS.map(c => (
+          {counters.map(c => (
             <CounterCard key={c.label} {...c} />
           ))}
         </div>

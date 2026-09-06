@@ -64,6 +64,24 @@ class Manager {
     ).setOptions({ includeDeleted: true }).lean()
   }
 
+  /* clinics MRF */
+  // NUEVO: Obtener los MRF populares ordenados por requestCount de mayor a menor
+  readPopularMRFs = async (limit = 3) => {
+    return await this.model
+      .find({ isMRF: true })
+      .sort({ requestCount: -1, name: 1 }) // Mayor uso primero, si hay empate luego alfabético
+      .limit(limit)
+      .lean();
+  };
+  // NUEVO: Incrementar el contador de solicitudes
+  incrementRequestCount = async (id) => {
+    return await this.model.findByIdAndUpdate(
+      id,
+      { $inc: { requestCount: 1 } },
+      { returnDocument: 'after' }
+    ).setOptions({ includeDeleted: true }).lean();
+  };
+
   /* Delete All testing - rebooting DB */
   deleteAll = async () => await this.model.deleteMany({});
   }

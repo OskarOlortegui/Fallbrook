@@ -11,6 +11,21 @@ export const createClinic = async (req, res) => {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }
+
+/* MRF GET CLINICS */
+// GET /api/clinics/mrf/popular
+export const getPopularMRFs = async (req, res) => {
+  try {
+    const popularMRFs = await clinicsManager.readPopularMRFs();
+    res.status(200).json({ success: true, data: popularMRFs });
+  } catch (err) {
+    res.status(500).json({ success: false, errors: { message: err.message } });
+  }
+};
+
+// PATCH /api/clinics/:id/increment-request (opcional para incrementar desde el envío)
+// export const incrementClinicRequest = async (req, res) => {// AUN NO VER READ.md
+
 // GET /api/clinics
 // Query params: ?name=fallbrook  ?city=fallbrook  ?includeDeleted=true
 export const getClinics = async (req, res) => {

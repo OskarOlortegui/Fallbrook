@@ -11,7 +11,7 @@ const clinicSchema = new Schema({
     },
     medicalGroup: {  // NUEVO: Para saber si esta sede pertenece a un grupo (ej: "RadNet" o "Alliance")
         type: Schema.Types.ObjectId, 
-        ref: 'MedicalGroup', //aca ref hace referencia al nombre de la collection no?
+        ref: 'MedicalGroup',
         index: true 
     },
     address: {
@@ -32,7 +32,17 @@ const clinicSchema = new Schema({
     faxes:  { type: [String], default: [] },
     website: { type: String },
     tin: { type: String }, // Tax ID específico de esa locación
-    // NUEVO: Historial de notas o noticias
+    // ── NUEVOS CAMPOS PARA MRF Y ENVIOS DE FAX ──
+    isMRF: {
+        type: Boolean,
+        default: true, // Si es true, esta entidad procesa/emite registros médicos
+        index: true
+    },
+    requestCount: {
+        type: Number,
+        default: 0, // Para saber cuáles son las más frecuentadas (Trending)
+        index: true
+    },
     notes: [noteSchema], 
     status: {
         type: String,
