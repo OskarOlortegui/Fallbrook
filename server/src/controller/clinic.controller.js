@@ -16,15 +16,21 @@ export const createClinic = async (req, res) => {
 // GET /api/clinics/mrf/popular
 export const getPopularMRFs = async (req, res) => {
   try {
-    const popularMRFs = await clinicsManager.readPopularMRFs();
+    const popularMRFs = await clinicsManager.readMRFs(3);
     res.status(200).json({ success: true, data: popularMRFs });
   } catch (err) {
     res.status(500).json({ success: false, errors: { message: err.message } });
   }
 };
-
-// PATCH /api/clinics/:id/increment-request (opcional para incrementar desde el envío)
-// export const incrementClinicRequest = async (req, res) => {// AUN NO VER READ.md
+ // GET /api/clinics/mrf
+export const getMRFs = async (req, res) => {
+  try {
+    const MRFs = await clinicsManager.readMRFs();
+    res.status(200).json({ success: true, data: MRFs });
+  } catch (err) {
+    res.status(500).json({ success: false, errors: { message: err.message } });
+  }
+};
 
 // GET /api/clinics
 // Query params: ?name=fallbrook  ?city=fallbrook  ?includeDeleted=true

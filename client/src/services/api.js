@@ -36,5 +36,8 @@ export const api = {
     request(`/doctors/${id}`),
 
   getClinicById: (id) =>
-    request(`/clinics/${id}`)
+    request(`/clinics/${id}`),
+
+  getPopularMRFs: () =>
+  request('/clinics/mrf/popular')
 }

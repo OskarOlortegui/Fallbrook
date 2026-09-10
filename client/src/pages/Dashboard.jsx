@@ -4,6 +4,7 @@ import DoctorCard from '../components/DoctorCard'
 import MRFCard from '../components/MRFCard'
 import { useEffect, useState } from 'react'
 import { useDashboardData } from '../hooks/useDashboardData'
+import { Link } from 'react-router'
 
 // ── Datos hardcodeados (temporales hasta conectar la API) ──
 const MRF_LIST = [
@@ -37,6 +38,7 @@ export default function Dashboard() {
     medicalGroups,
     insurances,
     radiology,
+    popularMRFs,
     loading,
     error
   } = useDashboardData();
@@ -103,11 +105,11 @@ export default function Dashboard() {
         {/* MRF */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-base font-medium">Medical records facilities (MRF)</h2>
-          <button className="text-xs text-(--accent) hover:underline">See all →</button>
+          <Link to="/clinics/mrf" className="text-xs text-(--accent) hover:underline">See all →</Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-10">
-          {MRF_LIST.map(m => (
-            <MRFCard key={m.id} facility={m} />
+          {popularMRFs.map(mrf => (
+            <MRFCard key={mrf._id} facility={mrf} />
           ))}
         </div>
       </main>

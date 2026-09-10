@@ -66,12 +66,15 @@ class Manager {
 
   /* clinics MRF */
   // NUEVO: Obtener los MRF populares ordenados por requestCount de mayor a menor
-  readPopularMRFs = async (limit = 3) => {
-    return await this.model
-      .find({ isMRF: true })
-      .sort({ requestCount: -1, name: 1 }) // Mayor uso primero, si hay empate luego alfabético
-      .limit(limit)
-      .lean();
+  readMRFs = async (limit = null) => {
+    let query = this.model
+    .find({ isMRF: true })
+    .sort({ requestCount: -1, name: 1 }) // Mayor uso primero, si hay empate luego alfabético
+
+    if (limit !== null) {
+      query = query.limit(limit)
+    }
+    return await query.lean()
   };
   // NUEVO: Incrementar el contador de solicitudes
   incrementRequestCount = async (id) => {

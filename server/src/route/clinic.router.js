@@ -11,17 +11,16 @@ import {
     removeClinicNote,
     addMedicalGroupToClinic,
     removeMedicalGroupFromClinic,
-    getPopularMRFs
+    getPopularMRFs,
+    getMRFs
 } from '../controller/clinic.controller.js'
 
 const clinicRouter = Router();
 
 // ── RUTAS ESPECÍFICAS ───────────────────────
 
-clinicRouter.get(
-  "/mrf/popular",
-  getPopularMRFs
-);
+clinicRouter.get("/mrf/popular", getPopularMRFs); //dashboard
+clinicRouter.get("/mrf", getMRFs); // GET /api/clinics/mrf
 
 // ============ CRUD BÁSICO ============
 // POST /api/clinics
