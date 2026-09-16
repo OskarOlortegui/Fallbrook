@@ -1,4 +1,3 @@
-import Topbar from '../components/Topbar'
 import CounterCard from '../components/CounterCard'
 import DoctorCard from '../components/DoctorCard'
 import MRFCard from '../components/MRFCard'
@@ -47,35 +46,37 @@ export default function Dashboard() {
     {
       label: 'Doctors',
       count: doctors.length,
-      icon: '🩺'
+      icon: '🩺',
+      path: '/doctors'
     },
     {
       label: 'Clinics',
       count: clinics.length,
-      icon: '🏥'
+      icon: '🏥',
+      path: '/clinics'
     },
     {
       label: 'Groups',
       count: medicalGroups.length,
-      icon: '🔗'
+      icon: '🔗',
+      path: '/medical-groups'
     },
     {
       label: 'Insurances',
       count: insurances.length,
-      icon: '🛡️'
+      icon: '🛡️',
+      path: '/insurances'
     },
     {
       label: 'Radiology',
       count: radiology.length,
-      icon: '☢️'
+      icon: '☢️',
+      path: '/radiology'
     }
   ]
   
   return (
-    <div className="min-h-screen bg-(--bg) text-(--text)">
-      <Topbar />
-
-      <main className="max-w-4xl mx-auto px-6 py-8">
+      <section className="max-w-4xl mx-auto px-6 py-8">
         {/* Saludo */}
         <h1 className="text-xl font-medium mb-1">Good morning, Oskar</h1>
         <p className="text-sm text-(--text2) mb-8">
@@ -92,7 +93,7 @@ export default function Dashboard() {
         {/* Doctores recientes */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-base font-medium">Recent doctors</h2>
-          <button className="text-xs text-(--accent) hover:underline">See all →</button>
+          <Link to="/doctors" className="text-xs text-(--accent) hover:underline">See all →</Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-10">
           {loading && <p className="text-xs text-(--muted)">Loading...</p>}
@@ -112,17 +113,6 @@ export default function Dashboard() {
             <MRFCard key={mrf._id} facility={mrf} />
           ))}
         </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-(--border) px-6 py-4 flex items-center justify-between text-xs text-(--muted)">
-        <div className="flex gap-4">
-          {['Doctors','Clinics','Insurances','Radiology','MRF'].map(l => (
-            <button key={l} className="hover:text-(--text2) cursor-pointer">{l}</button>
-          ))}
-        </div>
-        <span>Fallbrook Backoffice © {new Date().getFullYear()}</span>
-      </footer>
-    </div>
+      </section>
   )
 }

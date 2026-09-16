@@ -1,10 +1,22 @@
+import { Link } from 'react-router'
+
 export default function MRFCard({ facility }) {
-  const { name, address, phones, faxes } = facility
+  const {
+    _id,
+    name,
+    address,
+    city,
+    state,
+    zipCode,
+    phones = [],
+    faxes = [],
+    requestCount = 0
+  } = facility
 
   return (
-    <div className="bg-(--surface) border border-(--border) rounded-xl p-4 hover:border-(--text2) transition-colors cursor-pointer">
+    <Link to={`/clinics/mrf/${_id}`} className="bg-(--surface) border border-(--border) rounded-xl p-4 hover:border-(--text2) transition-colors cursor-pointer">
       <p className="text-sm font-medium text-(--text) mb-1">{name}</p>
-      <p className="text-xs text-(--text2) mb-3">{address}</p>
+      <p className="text-xs text-(--text2) mb-3">{address} {city}, {state} {zipCode}</p>
 
       <div className="space-y-1.5 text-xs text-(--text2)">
         <p className="flex gap-1.5">
@@ -18,6 +30,6 @@ export default function MRFCard({ facility }) {
         </p>
       </div>
 
-    </div>
+    </Link>
   )
 }

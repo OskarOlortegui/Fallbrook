@@ -38,6 +38,10 @@ export const api = {
   getClinicById: (id) =>
     request(`/clinics/${id}`),
 
+  /* desde el Backend -> clinic.router.js */
+  getMRFs: () => 
+    request('/clinics/mrf'), 
+
   getPopularMRFs: () =>
-  request('/clinics/mrf/popular')
+    request('/clinics/mrf/popular')
 }

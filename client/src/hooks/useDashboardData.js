@@ -21,12 +21,12 @@ export function useDashboardData() {
 
             // Ejecutamos todas las peticiones en paralelo
             const [docsRes, clinicsRes, groupsRes, insRes, radRes, mrfRes] = await Promise.all([
-            api.getDoctors(),
-            api.getClinics(),
-            api.getMedicalGroups(),
-            api.getInsurances(),
-            api.getRadiology(),
-            api.getPopularMRFs()
+                api.getDoctors(),
+                api.getClinics(),
+                api.getMedicalGroups(),
+                api.getInsurances(),
+                api.getRadiology(),
+                api.getPopularMRFs()
             ])
 
             setDoctors(docsRes.data)
@@ -35,6 +35,7 @@ export function useDashboardData() {
             setInsurances(insRes.data)
             setRadiology(radRes.data)
             setPopularMRFs(mrfRes.data)
+            //console.log(mrfRes.data)
                 
         } catch (err) {
             console.error(err)

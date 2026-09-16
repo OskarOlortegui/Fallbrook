@@ -10,6 +10,8 @@ import {
     getDoctorInsurances,
     removeDoctorFromInsurance,
     addClinicToInsurance,
+    getClinicInsurances,
+
     addMedicalGroupToInsurance,
     addRadiologyCenterToInsurance
 } from '../controller/insurance.controller.js'
@@ -30,7 +32,7 @@ insuranceRouter.post('/', createInsurance)
 // Van antes de /:slug porque "pivot" es una ruta estática,
 // si no, Express interpretaría "pivot" como si fuera un slug
 
-
+/* PIVOT DOCTOR */
 // POST /api/insurances/pivot/doctor
 // Body: { doctorId, insuranceId, status, notes }
 insuranceRouter.post('/pivot/doctor', addDoctorToInsurance)
@@ -45,9 +47,12 @@ insuranceRouter.get('/pivot/doctor/:doctorId', isValidId, getDoctorInsurances)
 // Úsalo cuando agregaste un pivot por error y quieres borrarlo de raíz
 insuranceRouter.delete('/pivot/doctor/:doctorId/:insuranceId', isValidId, removeDoctorFromInsurance)
 
+/* PIVOT CLINIC */
 // POST /insurances/pivot/clinic
 // Body: { clinicId, insuranceId, status, notes }
 insuranceRouter.post('/pivot/clinic', addClinicToInsurance) 
+insuranceRouter.get('/pivot/clinic/:clinicId',isValidId, getClinicInsurances)
+//insuranceRouter.delete('/pivot/clinic/:clinicId/:insuranceId', isValidId, removeClinicFromInsurance)
 
 // POST /insurances/pivot/medical-group
 // Body: { medicalGroupId, insuranceId, status, notes }
@@ -77,7 +82,6 @@ insuranceRouter.post('/pivot/radiology-center', addRadiologyCenterToInsurance)
 //    GET /insurances/chg?type=doctors&search=garcia
 // ─────────────────────────────────────────────
 insuranceRouter.get('/:slug', getInsuranceBySlug)
-
 
 //  PATCH /insurances/:id
 insuranceRouter.patch('/:id', updateInsurance)

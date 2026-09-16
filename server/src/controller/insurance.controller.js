@@ -248,6 +248,25 @@ export const addClinicToInsurance = async (req, res) => {
         res.status(400).json({ success: false, errors: { message: err.message } })
     }
 }
+// GET /api/insurances/pivot/clinic/:clinicId
+export const getClinicInsurances = async (req, res) => {
+    try {
+        const clinic = await Clinic.findById(req.params.clinicId)
+        if (!clinic) {
+            return res.status(404).json({success: false, errors: {message: 'Clinic not found'}})
+        }
+
+        const pivots = await ClinicInsurance
+            .find({ clinic: req.params.clinicId })
+            .populate('insurance', 'name shortName slug')
+            .sort({ createdAt: -1 })
+
+        res.status(200).json({success: true,data: pivots})
+
+    } catch (err) {
+        res.status(500).json({success: false, errors: {message: err.message}})
+    }
+}
 
 // ============ PIVOT — MEDICAL GROUP ============
 // POST /insurances/pivot/medical-group

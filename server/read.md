@@ -81,5 +81,6 @@ se crea la solicitud
         ↓
 requestCount + 1
 
-PARA EL MRF NO NECESITO EL .populate(medicalgroup) porque yo quiero el fax, nombre del lugar
-luego formulario llenar el nombre del pt, el DOB, la fecha actual y el custome message "last discharge or er notes"
+estamos revisando todas las rutas de nuevo
+parece hay inconsistencia con INSURANCE ROUTER/CONTROLLER porque usa los
+metodos de mongoose directament y no un manager o el manager que ya usamos
