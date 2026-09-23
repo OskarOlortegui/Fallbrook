@@ -38,7 +38,7 @@ const doctorInsuranceSchema = new Schema({
 }, { timestamps: true })
 
 // Un doctor no puede estar duplicado en el mismo seguro
-doctorInsuranceSchema.index({ doctor: 1, insurance: 1 }, { unique: true })
+doctorInsuranceSchema.index({ doctor: 1, insurance: 1 }, { unique: true }) // El 1 significa orden ascendente
 
 
 // ─────────────────────────────────────────────

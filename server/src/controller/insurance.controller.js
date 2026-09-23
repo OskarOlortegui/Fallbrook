@@ -191,7 +191,7 @@ export const getDoctorInsurances = async (req, res) => {
         }
 
         const pivots = await DoctorInsurance
-            .find({ doctor: req.params.doctorId })
+            .find({ doctor: req.params.doctorId}, '-doctor -__v') // Excluye doctor y __v
             .populate('insurance', 'name shortName slug')
             .sort({ createdAt: -1 })
 
@@ -267,6 +267,27 @@ export const getClinicInsurances = async (req, res) => {
         res.status(500).json({success: false, errors: {message: err.message}})
     }
 }
+// DELETE /api/insurances/pivot/clinic/:clinicId/:insuranceId
+export const removeClinicFromInsurance = async (req, res) => {
+    try {
+        const { clinicId, insuranceId } = req.params
+
+        const pivot = await ClinicInsurance.findOneAndDelete({
+            clinic: clinicId,
+            insurance: insuranceId
+        })
+        if (!pivot) {
+            return res.status(404).json({
+                success: false,
+                errors: { message: 'Relationship not found between this clinic and insurance' }
+            })
+        }
+
+        res.status(200).json({ success: true, message: 'Relationship removed successfully' })
+    } catch (err) {
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
 
 // ============ PIVOT — MEDICAL GROUP ============
 // POST /insurances/pivot/medical-group
@@ -293,6 +314,45 @@ export const addMedicalGroupToInsurance = async (req, res) => {
         res.status(400).json({ success: false, errors: { message: err.message } })
     }
 }
+// GET /api/insurances/pivot/medical-group/:groupId
+export const getGroupInsurances = async (req, res) => {
+    try {
+        const group = await MedicalGroup.findById(req.params.groupId)
+        if (!group) {
+            return res.status(404).json({ success: false, errors: { message: 'Medical Group not found' } })
+        }
+
+        const pivots = await MedicalGroupInsurance
+            .find({ medicalGroup: req.params.groupId })
+            .populate('insurance', 'name shortName slug')
+            .sort({ createdAt: -1 })
+
+        res.status(200).json({ success: true, data: pivots })
+    } catch (err) {
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
+// DELETE /api/insurances/pivot/medical-group/:groupId/:insuranceId
+export const removeGroupFromInsurance = async (req, res) => {
+    try {
+        const { groupId, insuranceId } = req.params
+
+        const pivot = await MedicalGroupInsurance.findOneAndDelete({
+            medicalGroup: groupId,
+            insurance: insuranceId
+        })
+        if (!pivot) {
+            return res.status(404).json({
+                success: false,
+                errors: { message: 'Relationship not found between this medical group and insurance' }
+            })
+        }
+
+        res.status(200).json({ success: true, message: 'Relationship removed successfully' })
+    } catch (err) {
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
 
 // ============ PIVOT — RADIOLOGY CENTER ============
 // POST /insurances/pivot/radiology-center
@@ -317,5 +377,45 @@ export const addRadiologyCenterToInsurance = async (req, res) => {
         res.status(201).json({ success: true, data: pivot })
     } catch (err) {
         res.status(400).json({ success: false, errors: { message: err.message } })
+    }
+}
+// GET /api/insurances/pivot/radiology-center/:radiologyId
+export const getRadiologyInsurances = async (req, res) => {
+    try {
+        const center = await RadiologyCenter.findById(req.params.radiologyId)
+        if (!center) {
+            return res.status(404).json({ success: false, errors: { message: 'Radiology Center not found' } })
+        }
+
+        const pivots = await RadiologyCenterInsurance
+            .find({ radiologyCenter: req.params.radiologyId })
+            .populate('insurance', 'name shortName slug')
+            .sort({ createdAt: -1 })
+
+        res.status(200).json({ success: true, data: pivots })
+    } catch (err) {
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
+
+// DELETE /api/insurances/pivot/radiology-center/:radiologyId/:insuranceId
+export const removeRadiologyFromInsurance = async (req, res) => {
+    try {
+        const { radiologyId, insuranceId } = req.params
+
+        const pivot = await RadiologyCenterInsurance.findOneAndDelete({
+            radiologyCenter: radiologyId,
+            insurance: insuranceId
+        })
+        if (!pivot) {
+            return res.status(404).json({
+                success: false,
+                errors: { message: 'Relationship not found between this radiology center and insurance' }
+            })
+        }
+
+        res.status(200).json({ success: true, message: 'Relationship removed successfully' })
+    } catch (err) {
+        res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }

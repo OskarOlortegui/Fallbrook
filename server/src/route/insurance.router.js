@@ -6,6 +6,7 @@ import {
     updateInsurance,
     deactivateInsurance,
     getInsuranceBySlug,
+
     addDoctorToInsurance,
     getDoctorInsurances,
     removeDoctorFromInsurance,
@@ -16,11 +17,11 @@ import {
 
     addMedicalGroupToInsurance,
     getGroupInsurances,
-    removeClinicFromInsurance,
+    removeGroupFromInsurance,
 
     addRadiologyCenterToInsurance,
-    getRadiologyToInsurance,
-    removeRadiologyToInsurance
+    getRadiologyInsurances,
+    removeRadiologyFromInsurance
 
 } from '../controller/insurance.controller.js'
 
@@ -72,8 +73,8 @@ insuranceRouter.delete('/pivot/medical-group/:groupId/:insuranceId', isValidId, 
 // POST /insurances/pivot/radiology-center
 // Body: { radiologyCenterId, insuranceId, status, notes }
 insuranceRouter.post('/pivot/radiology-center', addRadiologyCenterToInsurance)
-insuranceRouter.get('/pivot/radiology-center/:radiologyId', getRadiologyToInsurance)
-insuranceRouter.delete('/pivot/radiology-center/:radiologyId/:insuranceId', removeRadiologyToInsurance)
+insuranceRouter.get('/pivot/radiology-center/:radiologyId',isValidId, getRadiologyInsurances)
+insuranceRouter.delete('/pivot/radiology-center/:radiologyId/:insuranceId',isValidId, removeRadiologyFromInsurance)
 
 
 // ─────────────── RUTAS DINÁMICAS DE INSURANCE (van al final) ──────────────────────────────
