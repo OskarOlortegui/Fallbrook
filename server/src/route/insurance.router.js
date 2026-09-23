@@ -9,11 +9,19 @@ import {
     addDoctorToInsurance,
     getDoctorInsurances,
     removeDoctorFromInsurance,
+
     addClinicToInsurance,
     getClinicInsurances,
+    removeClinicFromInsurance,
 
     addMedicalGroupToInsurance,
-    addRadiologyCenterToInsurance
+    getGroupInsurances,
+    removeClinicFromInsurance,
+
+    addRadiologyCenterToInsurance,
+    getRadiologyToInsurance,
+    removeRadiologyToInsurance
+
 } from '../controller/insurance.controller.js'
 
 const insuranceRouter = Router()
@@ -52,15 +60,20 @@ insuranceRouter.delete('/pivot/doctor/:doctorId/:insuranceId', isValidId, remove
 // Body: { clinicId, insuranceId, status, notes }
 insuranceRouter.post('/pivot/clinic', addClinicToInsurance) 
 insuranceRouter.get('/pivot/clinic/:clinicId',isValidId, getClinicInsurances)
-//insuranceRouter.delete('/pivot/clinic/:clinicId/:insuranceId', isValidId, removeClinicFromInsurance)
+insuranceRouter.delete('/pivot/clinic/:clinicId/:insuranceId', isValidId, removeClinicFromInsurance)
 
+/* PIVOT MEDICAL */
 // POST /insurances/pivot/medical-group
 // Body: { medicalGroupId, insuranceId, status, notes }
 insuranceRouter.post('/pivot/medical-group', addMedicalGroupToInsurance)
+insuranceRouter.get('/pivot/medical-group/:groupId',isValidId, getGroupInsurances)
+insuranceRouter.delete('/pivot/medical-group/:groupId/:insuranceId', isValidId, removeGroupFromInsurance)
 
 // POST /insurances/pivot/radiology-center
 // Body: { radiologyCenterId, insuranceId, status, notes }
 insuranceRouter.post('/pivot/radiology-center', addRadiologyCenterToInsurance)
+insuranceRouter.get('/pivot/radiology-center/:radiologyId', getRadiologyToInsurance)
+insuranceRouter.delete('/pivot/radiology-center/:radiologyId/:insuranceId', removeRadiologyToInsurance)
 
 
 // ─────────────── RUTAS DINÁMICAS DE INSURANCE (van al final) ──────────────────────────────

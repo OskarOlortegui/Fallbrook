@@ -44,7 +44,6 @@ export const getDoctors = async (req,res) => {
             .find({doctor: { $in: doctorIds }}) //Dame todos los registros de DoctorInsurance cuyo doctor sea uno de estos doctores.
             .populate('insurance','name shortName slug')
 
-
             // 4. Agrupamos los seguros por doctor
             const insurancesByDoctor = {}
 
@@ -232,7 +231,7 @@ export const addMedicalGroupToDoctor = async (req, res) => {
 
 // DELETE /api/doctors/:id/medicalGroups/:mgId
 export const removeMedicalGroupFromDoctor = async (req, res) => {
-    try {
+    try { 
         const { id, mgId } = req.params
  
         const doctor = await doctorsManager.readById(id)

@@ -1,17 +1,5 @@
 import { clinicsManager, doctorsManager, medicalGroupsManager  } from '../data/manager.mongo.js'
 
-// ============ CRUD BÁSICO ============
-
-// POST /api/clinics
-export const createClinic = async (req, res) => {
-    try {
-        const newClinic = await clinicsManager.createOne(req.body)
-        res.status(201).json({ success: true, data: newClinic })
-    } catch (err) {
-        res.status(500).json({ success: false, errors: { message: err.message } })
-    }
-}
-
 /* MRF GET CLINICS */
 // GET /api/clinics/mrf/popular
 export const getPopularMRFs = async (req, res) => {
@@ -31,6 +19,18 @@ export const getMRFs = async (req, res) => {
     res.status(500).json({ success: false, errors: { message: err.message } });
   }
 };
+
+// ============ CRUD BÁSICO ============
+
+// POST /api/clinics
+export const createClinic = async (req, res) => {
+    try {
+        const newClinic = await clinicsManager.createOne(req.body)
+        res.status(201).json({ success: true, data: newClinic })
+    } catch (err) {
+        res.status(500).json({ success: false, errors: { message: err.message } })
+    }
+}
 
 // GET /api/clinics
 // Query params: ?name=fallbrook  ?city=fallbrook  ?includeDeleted=true
