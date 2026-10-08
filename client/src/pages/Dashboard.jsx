@@ -5,31 +5,6 @@ import { useEffect, useState } from 'react'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { Link } from 'react-router'
 
-// ── Datos hardcodeados (temporales hasta conectar la API) ──
-const MRF_LIST = [
-  {
-    id: '1',
-    name: 'Temecula Valley Hospital',
-    address: '31700 Temecula Pkwy, Temecula CA',
-    phone: 'Medical Records: 951 331 2410 opt 2',
-    fax: '951 600 4363',
-  },
-  {
-    id: '2',
-    name: 'Palomar Medical Center',
-    address: '2185 Citracado Pkwy, Escondido CA',
-    phone: '760-739-3000',
-    fax: '760-480-7966',
-  },
-  {
-    id: '3',
-    name: 'Rancho Springs Medical Center',
-    address: '25500 Medical Center Dr, Murrieta CA',
-    phone: '951 696 6000',
-    fax: '951 600 4363',
-  },
-]
-
 export default function Dashboard() {
  const {
     doctors,

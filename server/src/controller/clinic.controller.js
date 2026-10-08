@@ -1,4 +1,5 @@
 import { clinicsManager, doctorsManager, medicalGroupsManager  } from '../data/manager.mongo.js'
+import { ClinicInsurance } from '../model/pivots.model.js'
 
 /* MRF GET CLINICS */
 // GET /api/clinics/mrf/popular
@@ -49,6 +50,69 @@ export const getClinics = async (req, res) => {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }
+
+// GET MRF
+export const createMRFRequest = async (req, res) => {
+    try {
+        const { id } = req.params
+        const {
+            patientName,
+            dob,
+            facility,
+            fax
+        } = req.body
+
+        // 1. Buscar la clínica
+        const clinic = await clinicsManager.readById(id)
+        if (!clinic) {
+            return res.status(404).json({
+                success: false,
+                errors: {
+                    message: "Clinic not found"
+                }
+            })
+        }
+
+
+        // 2. Verificar que realmente sea MRF
+        if (!clinic.isMRF) {
+            return res.status(400).json({
+                success: false,
+                errors: {
+                    message: "This clinic is not an MRF"
+                }
+            })
+        }
+
+
+        // 3. Generar PDF
+        // const pdf = await generateMRFPdf(...)
+
+
+        // 4. Enviar PDF mediante RingCentral
+        // const result = await sendFax(...)
+
+
+        // 5. Incrementar contador
+        // await clinicsManager.incrementRequestCount(id)
+
+
+        res.status(200).json({
+            success: true,
+            message: "MRF request sent successfully"
+        })
+
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            errors: {
+                message: err.message
+            }
+        })
+    }
+}
+
+
 // GET /api/clinics/:id   (si si popula el medicalGroup todo ok)
 export const getClinicById = async (req, res) => {
     try {
@@ -56,7 +120,29 @@ export const getClinicById = async (req, res) => {
         if (!clinic) {
             return res.status(404).json({ success: false, errors: { message: "Clinic not found" } })
         }
-        res.status(200).json({ success: true, data: clinic })
+
+         // Buscamos los seguros asociados a esta clínica
+        const insurancePivots = await ClinicInsurance
+            .find({ clinic: req.params.id, status: "verified" })
+            .populate(
+                "insurance",
+                "name shortName slug phones"
+            )
+            .sort({ createdAt: -1 });
+
+        // Formateamos los seguros para el frontend
+       const insurances = insurancePivots
+                .filter(p => p.insurance)
+                .map(p => ({
+                    name: p.insurance.name,
+                    shortName: p.insurance.shortName,
+                    slug: p.insurance.slug,
+                    phones: p.insurance.phones,
+                    status: p.status,
+                    since: p.effectiveDate
+                }));
+
+        res.status(200).json({ success: true, data: {...clinic, insurances} })
     } catch (err) {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }

@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
-
+// Cada pivot responde: ¿Cuál es el estado de la relación entre estas dos entidades?
 // ─────────────────────────────────────────────
-//  STATUS enum compartido por todas las pivots
+//  STATUS enum ¿Cuál es el estado de la relación entre esta entidad y este seguro?
 // ─────────────────────────────────────────────
 const STATUS_ENUM = ["verified", "out-of-network", "pending", "deleted"]
 // "prohibited" lo movemos a blockReason en la entidad principal

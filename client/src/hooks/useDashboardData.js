@@ -35,7 +35,7 @@ export function useDashboardData() {
             setInsurances(insRes.data)
             setRadiology(radRes.data)
             setPopularMRFs(mrfRes.data)
-            //console.log(mrfRes.data)
+            console.log(docsRes)
                 
         } catch (err) {
             console.error(err)

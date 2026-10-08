@@ -10,6 +10,8 @@ import Radiology from './pages/Radiology';
 import MRF from './pages/MRF';
 import MRFDetail from './pages/MRFDetail'
 import Groups from './pages/Groups';
+import DoctorDetail from './pages/DoctorDetail';
+import ClinicDetail from './pages/ClinicDetail';
 
 
 const routes = createRoutesFromElements(
@@ -17,7 +19,9 @@ const routes = createRoutesFromElements(
 
         <Route index element={<Dashboard />} />
         <Route path="doctors" element={<Doctors />} />
+        <Route path="doctors/:id" element={<DoctorDetail />} />
         <Route path="clinics" element={<Clinics />} />
+        <Route path="clinics/:id" element={<ClinicDetail />} />
         <Route path='medical-groups' element={<Groups/>} />
         <Route path="insurances" element={<Insurances />} />
         <Route path="radiology" element={<Radiology />} />

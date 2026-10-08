@@ -1,3 +1,5 @@
+import { Link } from "react-router"
+
 function initials(name) {
   return name.replace('Dr. ', '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
 }
@@ -63,9 +65,9 @@ export default function DoctorCard({ doctor }) {
         <button className="flex-1 text-xs border border-(--border) rounded-lg py-1.5 text-(--text2) hover:bg-(--surface2) cursor-pointer">
           📝 Note
         </button>
-        <button className="flex-1 text-xs bg-(--accent) text-white rounded-lg py-1.5 hover:opacity-90 cursor-pointer">
+        <Link to={`/doctors/${doctor._id}`} className="flex-1 text-xs text-center bg-(--accent) text-white rounded-lg py-1.5 hover:opacity-90 cursor-pointer">
           View detail
-        </button>
+        </Link>
       </div>
     </div>
   )

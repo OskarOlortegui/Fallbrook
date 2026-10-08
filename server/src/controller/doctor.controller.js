@@ -68,17 +68,6 @@ export const getDoctors = async (req,res) => {
                 ...doctor,
                 insurances: insurancesByDoctor[doctor._id.toString()] || []
             }))
-            /* const doctorsWithInsurances = doctors.map(doctor => {
-                const doctorObject = doctor.toObject
-                    ? doctor.toObject()
-                    : doctor
-
-                return {
-                    ...doctorObject,
-                    insurances:
-                    insurancesByDoctor[doctor._id.toString()] || []
-                }
-            }) */
 
             res.status(200).json({success: true, data: doctorsWithInsurances});
     } catch (err) {
@@ -99,19 +88,21 @@ export const getDoctorById = async (req, res) => {
 
         // Traemos los seguros del pivot con datos útiles
         const insurancePivots = await DoctorInsurance
-            .find({ doctor: req.params.id })
+            .find({ doctor: req.params.id, status: "verified" })
             .populate('insurance', 'name shortName slug phones')
             .sort({ createdAt: -1 })
 
         // Formateamos solo lo que el frontend necesita
-        const insurances = insurancePivots.map(p => ({
-            name:      p.insurance.name,
-            shortName: p.insurance.shortName,
-            slug:      p.insurance.slug,
-            phones:    p.insurance.phones,
-            status:    p.status,
-            since:     p.effectiveDate
-        }))
+        const insurances = insurancePivots
+                .filter(p => p.insurance)
+                .map(p => ({
+                    name: p.insurance.name,
+                    shortName: p.insurance.shortName,
+                    slug: p.insurance.slug,
+                    phones: p.insurance.phones,
+                    status: p.status,
+                    since: p.effectiveDate
+                }));
 
         res.status(200).json({ 
             success: true, 

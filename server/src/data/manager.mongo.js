@@ -26,7 +26,7 @@ class Manager {
     //return await this.model.find(filter).populate(populatePath).lean();
   };
 
-  readById = async (id, populatePath = "") => {
+  readById = async (id, populatePath = "") => { //para futuro considerar cambiar a readById(id, populate, includeDeleted)
     return await this.model.findOne({ _id: id }).setOptions({ includeDeleted: true }).populate(populatePath).lean();
   };
 

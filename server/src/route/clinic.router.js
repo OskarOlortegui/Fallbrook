@@ -3,6 +3,7 @@ import isValidId from '../middleware/isValidId.mid.js';
 import {
     createClinic,
     getClinics,
+    createMRFRequest,
     getClinicById,
     updateClinic,
     deleteAllClinics,
@@ -33,6 +34,9 @@ clinicRouter.get("/",getClinics)
 if (process.env.NODE_ENV === 'development') {
     clinicRouter.delete("/deleteAll", deleteAllClinics)
 }
+
+//POST /api/clinics/:id/mrf-request --- "Quiero realizar una solicitud MRF para esta clínica."
+clinicRouter.post("/:id/mrf-request", isValidId, createMRFRequest)
 
 // GET /api/clinics/:id
 clinicRouter.get("/:id", isValidId, getClinicById)
