@@ -46,7 +46,7 @@ export default function Dashboard() {
       label: 'Radiology',
       count: radiology.length,
       icon: '☢️',
-      path: '/radiology'
+      path: '/radiology-centers'
     }
   ]
   

@@ -1,5 +1,5 @@
 import { radiologyCentersManager } from '../data/manager.mongo.js'
-import { MedicalGroupRadiologyCenter } from '../model/pivots.model.js'
+import { MedicalGroupRadiologyCenter, RadiologyCenterInsurance } from '../model/pivots.model.js'
 
 // ============ CRUD BÁSICO ============
 // POST /api/radiology-centers
@@ -30,33 +30,86 @@ export const getRadiologyCenters = async (req, res) => {
 }
 // GET /api/radiology-centers/:id
 export const getRadiologyCenterById = async (req, res) => {
-    try {
-        const center = await radiologyCentersManager.readById(req.params.id)
-        if (!center) {
-            return res.status(404).json({ success: false, errors: { message: 'Radiology Center not found' } })
+  try {
+    const { id } = req.params
+
+    // 1. Obtener el Radiology Center
+    const center = await radiologyCentersManager.readById(id)
+
+    if (!center) {
+      return res.status(404).json({
+        success: false,
+        errors: {
+          message: 'Radiology Center not found'
         }
-
-        // Traemos los medical groups vinculados
-        const pivots = await MedicalGroupRadiologyCenter
-            .find({ radiologyCenter: req.params.id, status: "verified" })
-            .populate('medicalGroup', 'name phones website status')
-
-        const medicalGroups = pivots.map(p => ({
-            name:    p.medicalGroup.name,
-            phones:  p.medicalGroup.phones,
-            website: p.medicalGroup.website,
-            status:  p.status,
-            since:   p.effectiveDate
-        }))
-
-        res.status(200).json({ 
-            success: true, 
-            data: { ...center, medicalGroups } 
-        })
-    } catch (err) {
-        res.status(500).json({ success: false, errors: { message: err.message } })
+      })
     }
+
+    // 2. Obtener Medical Groups verificados
+    const groupPivots = await MedicalGroupRadiologyCenter
+      .find({
+        radiologyCenter: id,
+        status: 'verified'
+      })
+      .populate('medicalGroup', 'name phones website status')
+      .sort({ effectiveDate: -1 })
+
+    const medicalGroups = groupPivots
+      .filter(pivot => pivot.medicalGroup)
+      .map(pivot => ({
+        _id: pivot.medicalGroup._id,
+        name: pivot.medicalGroup.name,
+        phones: pivot.medicalGroup.phones,
+        website: pivot.medicalGroup.website,
+        status: pivot.status,
+        since: pivot.effectiveDate
+      }))
+
+    // 3. Obtener insurances verificados
+    const insurancePivots = await RadiologyCenterInsurance
+      .find({
+        radiologyCenter: id,
+        status: 'verified'
+      })
+      .populate(
+        'insurance',
+        'name shortName slug type active'
+      )
+      .sort({ effectiveDate: -1 })
+
+    const insurances = insurancePivots
+      .filter(pivot => pivot.insurance)
+      .map(pivot => ({
+        _id: pivot.insurance._id,
+        name: pivot.insurance.name,
+        shortName: pivot.insurance.shortName,
+        slug: pivot.insurance.slug,
+        type: pivot.insurance.type,
+        active: pivot.insurance.active,
+        status: pivot.status,
+        since: pivot.effectiveDate
+      }))
+
+    // 4. Devolver el centro con sus relaciones
+    return res.status(200).json({
+      success: true,
+      data: {
+        ...center,
+        medicalGroups,
+        insurances
+      }
+    })
+
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      errors: {
+        message: err.message
+      }
+    })
+  }
 }
+
 // PATCH /api/radiology-centers/:id
 export const updateRadiologyCenter = async (req, res) => {
     try {

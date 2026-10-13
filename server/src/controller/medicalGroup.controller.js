@@ -1,6 +1,9 @@
 import { medicalGroupsManager, clinicsManager, doctorsManager, radiologyCentersManager } from '../data/manager.mongo.js'
 import RadiologyCenter from '../model/radiologyCenter.model.js'
-import { MedicalGroupRadiologyCenter } from '../model/pivots.model.js'
+import { 
+    MedicalGroupRadiologyCenter,
+    MedicalGroupInsurance
+ } from '../model/pivots.model.js'
 
 // ============ CRUD BÁSICO ============
 // POST /api/medical-groups
@@ -27,35 +30,89 @@ export const getMedicalGroups = async (req, res) => {
         res.status(500).json({ success: false, errors: { message: err.message } })
     }
 }
-// GET /api/medical-groups/:id
+// GET /api/medical-groups/:i
+/* active: indica si el seguro está activo según el modelo Insurance.
+status: indica el estado de la relación entre el seguro y el Medical Group, que proviene del pivot MedicalGroupInsurance. */
 export const getMedicalGroupById = async (req, res) => {
-    try {
-        const group = await medicalGroupsManager.readById(req.params.id)
-        if (!group) {
-            return res.status(404).json({ success: false, errors: { message: "Medical Group not found" } })
-        }
+  try {
+    const { id } = req.params
 
-        // Traemos los radiology centers vinculados
-        const pivots = await MedicalGroupRadiologyCenter
-            .find({ medicalGroup: req.params.id, status: "verified" })
-            .populate('radiologyCenter', 'name locations website status')
+    // 1. Buscar el Medical Group
+    const group = await medicalGroupsManager.readById(id)
 
-        const radiologyCenters = pivots.map(p => ({
-            name:      p.radiologyCenter.name,
-            locations: p.radiologyCenter.locations,
-            website:   p.radiologyCenter.website,
-            status:    p.status,
-            since:     p.effectiveDate
-        }))
-
-        res.status(200).json({ 
-            success: true, 
-            data: { ...group, radiologyCenters } 
-        })
-    } catch (err) {
-        res.status(500).json({ success: false, errors: { message: err.message } })
+    if (!group) {
+      return res.status(404).json({
+        success: false,
+        errors: { message: "Medical Group not found" }
+      })
     }
+
+    // 2. Buscar los seguros verificados asociados
+    const insurancePivots = await MedicalGroupInsurance
+      .find({
+        medicalGroup: id,
+        status: "verified"
+      })
+      .populate(
+        "insurance",
+        "name shortName slug type active"
+      )
+      .sort({ effectiveDate: -1 })
+
+    const insurances = insurancePivots
+      .filter(pivot => pivot.insurance)
+      .map(pivot => ({
+        _id: pivot.insurance._id,
+        name: pivot.insurance.name,
+        shortName: pivot.insurance.shortName,
+        slug: pivot.insurance.slug,
+        type: pivot.insurance.type,
+        active: pivot.insurance.active,
+        status: pivot.status,
+        since: pivot.effectiveDate
+      }))
+
+    // 3. Buscar los centros de radiología verificados
+    const radiologyPivots = await MedicalGroupRadiologyCenter
+      .find({
+        medicalGroup: id,
+        status: "verified"
+      })
+      .populate(
+        "radiologyCenter",
+        "name locations website status"
+      )
+      .sort({ effectiveDate: -1 })
+
+    const radiologyCenters = radiologyPivots
+      .filter(pivot => pivot.radiologyCenter)
+      .map(pivot => ({
+        _id: pivot.radiologyCenter._id,
+        name: pivot.radiologyCenter.name,
+        locations: pivot.radiologyCenter.locations,
+        website: pivot.radiologyCenter.website,
+        status: pivot.status,
+        since: pivot.effectiveDate
+      }))
+
+    // 4. Devolver el grupo con sus relaciones
+    return res.status(200).json({
+      success: true,
+      data: {
+        ...group,
+        insurances,
+        radiologyCenters
+      }
+    })
+
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      errors: { message: err.message }
+    })
+  }
 }
+
 // PUT /api/medical-groups/:id
 export const updateMedicalGroup = async (req, res) => {
     try {

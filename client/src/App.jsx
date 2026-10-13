@@ -6,12 +6,14 @@ import Dashboard from './pages/Dashboard'
 import Doctors from './pages/Doctors'
 import Clinics from './pages/Clinics';
 import Insurances from './pages/Insurances'
-import Radiology from './pages/Radiology';
+import RadiologyCenters from './pages/RadiologyCenters';
 import MRF from './pages/MRF';
 import MRFDetail from './pages/MRFDetail'
 import Groups from './pages/Groups';
 import DoctorDetail from './pages/DoctorDetail';
 import ClinicDetail from './pages/ClinicDetail';
+import GroupDetail from './pages/GroupDetail';
+import RadiologyCenterDetail from './pages/RadiologyCenterDetail';
 
 
 const routes = createRoutesFromElements(
@@ -23,8 +25,10 @@ const routes = createRoutesFromElements(
         <Route path="clinics" element={<Clinics />} />
         <Route path="clinics/:id" element={<ClinicDetail />} />
         <Route path='medical-groups' element={<Groups/>} />
+        <Route path='medical-groups/:id' element={<GroupDetail />} />
         <Route path="insurances" element={<Insurances />} />
-        <Route path="radiology" element={<Radiology />} />
+        <Route path="radiology-centers" element={<RadiologyCenters />} />
+        <Route path="radiology-centers/:id" element={<RadiologyCenterDetail />} />
         <Route path="clinics/mrf" element={<MRF />} />
         <Route path="clinics/mrf/:id" element={<MRFDetail />} />
 

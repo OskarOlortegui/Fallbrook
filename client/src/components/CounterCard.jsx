@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 
 export default function CounterCard({ label, count, icon, danger, path }) {
+  console.log(path)
   return (
     <Link
       to={path}

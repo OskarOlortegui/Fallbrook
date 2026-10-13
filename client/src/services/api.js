@@ -25,11 +25,17 @@ export const api = {
   getMedicalGroups: (params = '') =>
     request(`/medical-groups${params}`),
 
+  getMedicalGroupById: (id) =>
+  request(`/medical-groups/${id}`),
+
   getInsurances: () =>
     request('/insurances'),
 
   getRadiology: (params = '') =>
     request(`/radiology-centers${params}`),
+
+  getRadiologyCenterById: (id) =>
+    request(`/radiology-centers/${id}`),
 
   // Individual
   getDoctorById: (id) =>
@@ -45,3 +51,48 @@ export const api = {
   getPopularMRFs: () =>
     request('/clinics/mrf/popular')
 }
+
+/* PARA ANHADIR NOTAS DICE */
+/* 
+async function request(endpoint, options = {}) {
+  const response = await fetch(`${BASE}${endpoint}`, {
+    ...options,
+    headers: {
+      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+      ...options.headers,
+    },
+  })
+
+  const result = await response.json()
+
+  if (!response.ok) {
+    throw new Error(
+      result.errors?.message ||
+      result.message ||
+      'Something went wrong'
+    )
+  }
+
+  return result
+}
+ */
+
+/* 
+
+getMedicalGroupById: (id) =>
+  request(`/medical-groups/${id}`),
+
+addMedicalGroupNote: (id, note) =>
+  request(`/medical-groups/${id}/notes`, {
+    method: 'POST',
+    body: JSON.stringify(note),
+  }),
+
+removeMedicalGroupNote: (id, noteId) =>
+  request(`/medical-groups/${id}/notes/${noteId}`, {
+    method: 'DELETE',
+  }),
+
+getRadiologyCentersOfMedicalGroup: (id) =>
+  request(`/medical-groups/${id}/radiology-centers`),
+*/
