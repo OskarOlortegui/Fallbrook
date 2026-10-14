@@ -55,14 +55,28 @@ export const getClinics = async (req, res) => {
 export const createMRFRequest = async (req, res) => {
     try {
         const { id } = req.params
-        const {
-            patientName,
-            dob,
-            facility,
-            fax
-        } = req.body
+        const { patientName, dob, facility, fax } = req.body
 
-        // 1. Buscar la clínica
+        // 1. Validar los campos requeridos
+        if (
+            typeof patientName !== 'string' ||
+            !patientName.trim() ||
+            typeof dob !== 'string' ||
+            !dob.trim() ||
+            typeof facility !== 'string' ||
+            !facility.trim() ||
+            typeof fax !== 'string' ||
+            !fax.trim()
+        ) {
+        return res.status(400).json({
+            success: false,
+            errors: {
+            message: 'Please provide all required MRF fields.',
+            },
+        })
+        }
+
+        // 2. Buscar la clínica
         const clinic = await clinicsManager.readById(id)
         if (!clinic) {
             return res.status(404).json({
@@ -73,8 +87,7 @@ export const createMRFRequest = async (req, res) => {
             })
         }
 
-
-        // 2. Verificar que realmente sea MRF
+        // 3. Verificar que realmente sea MRF
         if (!clinic.isMRF) {
             return res.status(400).json({
                 success: false,
@@ -96,17 +109,20 @@ export const createMRFRequest = async (req, res) => {
         // 5. Incrementar contador
         // await clinicsManager.incrementRequestCount(id)
 
-
-        res.status(200).json({
+    // 4. Prueba de conexión únicamente.
+    // Todavía no se guarda la solicitud,
+    // no se genera el PDF y no se envía el fax.
+        res.status(202).json({
             success: true,
-            message: "MRF request sent successfully"
+            message: 'Form received for testing. No MRF was generated or faxed.'
         })
 
     } catch (err) {
+        console.error('createMRFRequest error:', err.message)
         res.status(500).json({
             success: false,
             errors: {
-                message: err.message
+                message: 'Unable to process the MRF request.'
             }
         })
     }

@@ -1,8 +1,9 @@
+import { api } from '../services/api'
 import { useParams, Link } from 'react-router'
 import { useClinicDetail } from '../hooks/useClinicDetail'
 import { useState, useEffect } from 'react'
 
-export default function MRFDetail() {
+export default function MRFDetail() { //falta htmlFor en los <labels e id a los inputs para relacionarlos
   const { id } = useParams()
   const { clinic, loading, error } = useClinicDetail(id)
 
@@ -11,31 +12,62 @@ export default function MRFDetail() {
     dob: '',
     facility: '',
     fax: '',
-  })
+  });
+  const [sending, setSending] = useState(false)
+  const [success, setSuccess] = useState('')
+  const [submitError, setSubmitError] = useState('')
 
   useEffect(() => {
     if (clinic) {
       setForm(prev => ({
         ...prev,
-        facility: clinic.name,
+        facility: clinic.name || '',
+        fax: clinic.faxes?.[0] || '',
       }))
     }
   }, [clinic])
 
+
   function handleChange(e) {
-    setForm(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }))
+    const { name, value } = e.target
+      setForm(prev => ({
+        ...prev,
+        [name]: value,
+      }))
+    setSuccess('')
+    setSubmitError('')
   }
 
-  function handleSubmit(e) {
+  
+  async function handleSubmit(e) {
     e.preventDefault()
 
-    // Por ahora NO hacemos nada.
-    // En el futuro aquí irá el request para generar/enviar el MRF.
-    console.log('MRF form:', form)
+    setSending(true)
+    setSuccess('')
+    setSubmitError('')
+
+    try {
+      const result = await api.createMRFRequest(id, {
+        patientName: form.patientName.trim(),
+        dob: form.dob,
+        facility: form.facility.trim(),
+        fax: form.fax.trim(),
+      })
+
+      setSuccess(
+        result.message || 'The request was received.'
+      )
+
+      console.log('MRF response:', result)
+    } catch (err) {
+      setSubmitError(
+        err.message || 'Could not submit the MRF request.'
+      )
+    } finally {
+      setSending(false)
+    }
   }
+
 
   if (loading) {
     return (
@@ -314,14 +346,34 @@ export default function MRFDetail() {
               className="w-full bg-(--surface2) border border-(--border) rounded-lg px-3 py-2 text-sm text-(--text) placeholder:text-(--muted) focus:outline-none focus:border-(--accent)"
             />
           </div>
+          
+          {success && (
+            <p
+              role="status"
+              className="text-sm text-(--success)"
+            >
+              {success}
+            </p>
+          )}
+
+          {submitError && (
+            <p
+              role="alert"
+              className="text-sm text-(--danger)"
+            >
+              {submitError}
+            </p>
+          )}
 
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-(--accent) text-white text-sm rounded-lg py-2.5 hover:opacity-90 transition-opacity font-medium cursor-pointer"
+            disabled={sending}
+            className="w-full bg-(--accent) text-white text-sm rounded-lg py-2.5 hover:opacity-90 transition-opacity font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
-            Send MRF Request
+            {sending ? 'Submitting...' : 'Send MRF Request'}
           </button>
+
 
         </form>
 

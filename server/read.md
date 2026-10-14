@@ -84,3 +84,23 @@ requestCount + 1
 estamos revisando todas las rutas de nuevo
 parece hay inconsistencia con INSURANCE ROUTER/CONTROLLER porque usa los
 metodos de mongoose directament y no un manager o el manager que ya usamos
+
+# MRF
+
+5. ¿Qué falta para que el MRF funcione de verdad?
+Paso 1. Formulario y petición HTTP
+Recoger el paciente, la fecha de nacimiento, la clínica y el fax; enviar los datos al backend.
+
+Paso 2. Guardar la solicitud
+Definir cómo registrar cada petición en MongoDB, su estado y su relación con la clínica. En el código compartido aún no se guarda.
+
+Paso 3. Generar el PDF
+Crear el documento MRF con el formato y los campos que realmente requiere tu clínica.
+
+Paso 4. Enviar el fax
+Integrar RingCentral u otro servicio compatible, gestionar sus respuestas y registrar errores de envío.
+
+Paso 5. Actualizar el contador
+Incrementar requestCount cuando corresponda, según la regla que definamos para solicitudes aceptadas o faxes enviados.
+
+- Tratar los datos de pacientes con las medidas de seguridad y privacidad adecuadas para información médica.

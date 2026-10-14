@@ -1,17 +1,27 @@
 const BASE = '/api'
 
-async function request(endpoint) {
-  const response = await fetch(`${BASE}${endpoint}`)
+async function request(endpoint, options = {}) {
+  const response = await fetch(`${BASE}${endpoint}`, {
+    ...options,
+    headers: {
+      ...(options.body
+        ? { 'Content-Type': 'application/json' }
+        : {}),
+      ...options.headers,
+    },
+  })
+
+  const result = await response.json()
 
   if (!response.ok) {
-    const error = await response.json()
-
     throw new Error(
-      error.errors?.message || 'Something went wrong'
+      result.errors?.message ||
+      result.message ||
+      'Something went wrong'
     )
   }
 
-  return response.json()
+  return result
 }
 
 export const api = {
@@ -49,34 +59,19 @@ export const api = {
     request('/clinics/mrf'), 
 
   getPopularMRFs: () =>
-    request('/clinics/mrf/popular')
+    request('/clinics/mrf/popular'),
+
+  
+  createMRFRequest: (id, formData) =>
+    request(`/clinics/${id}/mrf-request`, {
+      method: 'POST',
+      body: JSON.stringify(formData),
+    }),
+
+
 }
 
 /* PARA ANHADIR NOTAS DICE */
-/* 
-async function request(endpoint, options = {}) {
-  const response = await fetch(`${BASE}${endpoint}`, {
-    ...options,
-    headers: {
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...options.headers,
-    },
-  })
-
-  const result = await response.json()
-
-  if (!response.ok) {
-    throw new Error(
-      result.errors?.message ||
-      result.message ||
-      'Something went wrong'
-    )
-  }
-
-  return result
-}
- */
-
 /* 
 
 getMedicalGroupById: (id) =>
