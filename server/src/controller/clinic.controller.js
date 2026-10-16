@@ -1,5 +1,41 @@
 import { clinicsManager, doctorsManager, medicalGroupsManager  } from '../data/manager.mongo.js'
 import { ClinicInsurance } from '../model/pivots.model.js'
+/* PDF MRF */
+import fs from 'node:fs/promises'
+import { fileURLToPath } from 'node:url';
+import { PDFDocument } from 'pdf-lib';
+import { getCurrentDate } from '../util/currentDate.js'
+
+const templatePath = fileURLToPath(
+  new URL('../../templates/mrf-authorization.pdf', import.meta.url)
+)
+function formatDateOfBirth(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+
+  if (!match) {
+    throw new Error('Date of birth must use YYYY-MM-DD.')
+  }
+
+  const [, year, month, day] = match
+
+  return `${month}/${day}/${year}`
+}
+
+// Helper para obtener fecha en formato MM.DD.YY (ej: 10.16.26)
+function getFormattedDatePrefix() {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles',
+    month: '2-digit',
+    day: '2-digit',
+    year: '2-digit',
+  }).formatToParts(new Date())
+
+  const values = Object.fromEntries(
+    parts.map(({ type, value }) => [type, value])
+  )
+
+  return `${values.month}.${values.day}.${values.year}`
+}
 
 /* MRF GET CLINICS */
 // GET /api/clinics/mrf/popular
@@ -51,32 +87,37 @@ export const getClinics = async (req, res) => {
     }
 }
 
-// GET MRF
+// create MRF
 export const createMRFRequest = async (req, res) => {
     try {
         const { id } = req.params
-        const { patientName, dob, facility, fax } = req.body
+        const {
+            patientName,
+            dob,
+            requesting,
+            recordsRequested,
+        } = req.body // del pdf que hemos creado el MRF sus campos
 
-        // 1. Validar los campos requeridos
-        if (
-            typeof patientName !== 'string' ||
-            !patientName.trim() ||
-            typeof dob !== 'string' ||
-            !dob.trim() ||
-            typeof facility !== 'string' ||
-            !facility.trim() ||
-            typeof fax !== 'string' ||
-            !fax.trim()
-        ) {
-        return res.status(400).json({
-            success: false,
-            errors: {
-            message: 'Please provide all required MRF fields.',
-            },
-        })
+        // 1. Validar los datos obligatorios
+        const requiredFields = {
+            patientName,
+            dob,
+            requesting,
+            recordsRequested
         }
 
-        // 2. Buscar la clínica
+        for (const [field, value] of Object.entries(requiredFields)) {
+            if (typeof value !== 'string' || !value.trim()) {
+                return res.status(400).json({
+                success: false,
+                errors: {
+                    message: `The field "${field}" is required.`,
+                },
+                })
+            }
+        }
+
+        // 2. Comprobar que existe el MRF seleccionado
         const clinic = await clinicsManager.readById(id)
         if (!clinic) {
             return res.status(404).json({
@@ -87,7 +128,7 @@ export const createMRFRequest = async (req, res) => {
             })
         }
 
-        // 3. Verificar que realmente sea MRF
+        // Verificar que realmente sea MRF
         if (!clinic.isMRF) {
             return res.status(400).json({
                 success: false,
@@ -96,6 +137,46 @@ export const createMRFRequest = async (req, res) => {
                 }
             })
         }
+
+        // 3. Leer la plantilla PDF original
+        const templateBytes = await fs.readFile(templatePath)
+        const pdfDoc = await PDFDocument.load(templateBytes)
+        const form = pdfDoc.getForm()
+
+        // 4. Rellenar los cinco campos del PDF
+            form.getTextField('patientName').setText(patientName.trim())
+            form.getTextField('dob').setText(formatDateOfBirth(dob))
+            form.getTextField('requesting').setText(requesting.trim())
+            form.getTextField('recordsRequested').setText(
+            recordsRequested.trim()
+        )
+
+        // La fecha se genera automáticamente en California
+        const dateSigned = getCurrentDate()
+        form.getTextField('dateSigned').setText(dateSigned)
+
+        // Actualizar la apariencia visual de los campos
+        form.updateFieldAppearances()
+
+        // Convertir los campos rellenados en texto seleccionable
+        form.flatten()
+
+        // Generar el PDF sin modificar la plantilla original
+        const pdfBytes = await pdfDoc.save()
+
+        // 6. Devolver el PDF para que el navegador lo descargue
+        // Generar prefijo de fecha (MM.DD.YY)
+        const datePrefix = getFormattedDatePrefix()
+        const facilityName = requesting.trim() // Limpiamos espacios al inicio/final
+        const filename = `${datePrefix} ${facilityName} MRF.pdf`//`MRF-Authorization-${id}.pdf`
+
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${filename}"`
+        )
+
+        return res.status(200).send(Buffer.from(pdfBytes))
 
 
         // 3. Generar PDF
@@ -112,10 +193,10 @@ export const createMRFRequest = async (req, res) => {
     // 4. Prueba de conexión únicamente.
     // Todavía no se guarda la solicitud,
     // no se genera el PDF y no se envía el fax.
-        res.status(202).json({
+        /* res.status(202).json({
             success: true,
             message: 'Form received for testing. No MRF was generated or faxed.'
-        })
+        }) */
 
     } catch (err) {
         console.error('createMRFRequest error:', err.message)

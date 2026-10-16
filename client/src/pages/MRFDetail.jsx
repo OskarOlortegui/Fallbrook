@@ -10,23 +10,23 @@ export default function MRFDetail() { //falta htmlFor en los <labels e id a los 
   const [form, setForm] = useState({
     patientName: '',
     dob: '',
-    facility: '',
-    fax: '',
+    requesting: '',
+    recordsRequested: '',
+    fax:'   '
   });
   const [sending, setSending] = useState(false)
   const [success, setSuccess] = useState('')
   const [submitError, setSubmitError] = useState('')
 
   useEffect(() => {
-    if (clinic) {
-      setForm(prev => ({
-        ...prev,
-        facility: clinic.name || '',
-        fax: clinic.faxes?.[0] || '',
-      }))
-    }
-  }, [clinic])
-
+  if (clinic) {
+    setForm(prev => ({
+      ...prev,
+      requesting: clinic.name || '',
+      fax: clinic.faxes?.[0] || '' 
+    }))
+  }
+}, [clinic])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -47,21 +47,20 @@ export default function MRFDetail() { //falta htmlFor en los <labels e id a los 
     setSubmitError('')
 
     try {
-      const result = await api.createMRFRequest(id, {
+      await api.downloadMRF(id, {
         patientName: form.patientName.trim(),
         dob: form.dob,
-        facility: form.facility.trim(),
-        fax: form.fax.trim(),
+        requesting: form.requesting.trim(),
+        recordsRequested: form.recordsRequested.trim(),
       })
 
       setSuccess(
-        result.message || 'The request was received.'
+        'PDF generated. Check your downloads folder.'
       )
 
-      console.log('MRF response:', result)
     } catch (err) {
       setSubmitError(
-        err.message || 'Could not submit the MRF request.'
+        err.message || 'Unable to generate the MRF PDF.'
       )
     } finally {
       setSending(false)
@@ -206,7 +205,6 @@ export default function MRFDetail() { //falta htmlFor en los <labels e id a los 
 
       </div>
 
-
       {/* Stats */}
       <div className="bg-(--surface) border border-(--border) rounded-xl p-5 mb-4">
 
@@ -283,19 +281,19 @@ export default function MRFDetail() { //falta htmlFor en los <labels e id a los 
 
       )}
 
-
       {/* MRF Request Form */}
       <div className="bg-(--surface) border border-(--border) rounded-xl p-5">
 
-        <p className="text-xs font-medium text-(--muted) uppercase tracking-wide mb-4">Send MRF Request</p>
+        <p className="text-xs font-medium text-(--muted) uppercase tracking-wide mb-4"> Generate MRF Authorization</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
 
           {/* Patient Name */}
           <div>
-            <label className="block text-xs text-(--text2) mb-1.5">Patient name <span className="text-(--danger)">*</span></label>
+            <label htmlFor="patientName" className="block text-xs text-(--text2) mb-1.5">Patient name <span className="text-(--danger)">*</span></label>
 
             <input
+              id="patientName"
               name="patientName"
               type="text"
               required
@@ -308,9 +306,10 @@ export default function MRFDetail() { //falta htmlFor en los <labels e id a los 
 
           {/* Date of Birth */}
           <div>
-            <label className="block text-xs text-(--text2) mb-1.5">Date of birth <span className="text-(--danger)">*</span></label>
+            <label htmlFor="dob" className="block text-xs text-(--text2) mb-1.5">Date of birth <span className="text-(--danger)">*</span></label>
 
             <input
+              id="dob"
               name="dob"
               type="date"
               required
@@ -320,29 +319,52 @@ export default function MRFDetail() { //falta htmlFor en los <labels e id a los 
             />
           </div>
 
-          {/* Facility */}
+          {/* Requesting */}
           <div>
-            <label className="block text-xs text-(--text2) mb-1.5">Facility</label>
+            <label htmlFor="requesting" className="block text-xs text-(--text2) mb-1.5">Facility</label>
 
             <input
-              name="facility"
+              id ="requesting"
+              name="requesting"
               type="text"
-              value={form.facility}
+              value={form.requesting}
               onChange={handleChange}
               className="w-full bg-(--surface2) border border-(--border) rounded-lg px-3 py-2 text-sm text-(--text) focus:outline-none focus:border-(--accent)"
             />
           </div>
+          
+          {/* Records Requested */}
+          <div>
+              <label
+                htmlFor="recordsRequested"
+                className="block text-xs text-(--text2) mb-1.5"
+              >
+                Records requested <span className="text-(--danger)">*</span>
+              </label>
+
+              <textarea
+                id="recordsRequested"
+                name="recordsRequested"
+                required
+                rows={3}
+                value={form.recordsRequested}
+                onChange={handleChange}
+                placeholder="Example: Complete medical records from January 2025 through October 2026"
+                className="w-full bg-(--surface2) border border-(--border) rounded-lg px-3 py-2 text-sm text-(--text) placeholder:text-(--muted) focus:outline-none focus:border-(--accent)"
+              />
+          </div>
 
           {/* Fax */}
           <div>
-            <label className="block text-xs text-(--text2) mb-1.5">Fax number</label>
+            <label htmlFor="fax" className="block text-xs text-(--text2) mb-1.5">Fax number</label>
 
             <input
+              id='fax'
               name="fax"
               type="text"
               value={form.fax}
               onChange={handleChange}
-              placeholder="No fax available"
+              placeholder=" fax number"
               className="w-full bg-(--surface2) border border-(--border) rounded-lg px-3 py-2 text-sm text-(--text) placeholder:text-(--muted) focus:outline-none focus:border-(--accent)"
             />
           </div>
@@ -371,14 +393,12 @@ export default function MRFDetail() { //falta htmlFor en los <labels e id a los 
             disabled={sending}
             className="w-full bg-(--accent) text-white text-sm rounded-lg py-2.5 hover:opacity-90 transition-opacity font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
-            {sending ? 'Submitting...' : 'Send MRF Request'}
+            {sending
+              ? 'Generating PDF...'
+              : 'Generate & Download PDF'}
           </button>
-
-
         </form>
-
       </div>
-
     </div>
   )
 }
