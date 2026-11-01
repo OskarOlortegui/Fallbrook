@@ -47,15 +47,6 @@ export const getPopularMRFs = async (req, res) => {
     res.status(500).json({ success: false, errors: { message: err.message } });
   }
 };
- // GET /api/clinics/mrf
-export const getMRFs = async (req, res) => {
-  try {
-    const MRFs = await clinicsManager.readMRFs();
-    res.status(200).json({ success: true, data: MRFs });
-  } catch (err) {
-    res.status(500).json({ success: false, errors: { message: err.message } });
-  }
-};
 
 // ============ CRUD BÁSICO ============
 
@@ -124,16 +115,6 @@ export const createMRFRequest = async (req, res) => {
                 success: false,
                 errors: {
                     message: "Clinic not found"
-                }
-            })
-        }
-
-        // Verificar que realmente sea MRF
-        if (!clinic.isMRF) {
-            return res.status(400).json({
-                success: false,
-                errors: {
-                    message: "This clinic is not an MRF"
                 }
             })
         }

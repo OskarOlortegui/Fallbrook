@@ -66,7 +66,6 @@ export const deactivateInsurance = async (req, res) => {
 // ============ RUTA PRINCIPAL ============
 // Query params: ?type=all|doctors|clinics|medical-groups|radiology-centers
 //               ?city=fallbrook  ?specialty=cardiology  ?search=garcia  ?status=verified
-
 export const getInsuranceBySlug = async (req, res) => {
     try {
         const { slug } = req.params

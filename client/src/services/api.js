@@ -41,6 +41,9 @@ export const api = {
   getInsurances: () =>
     request('/insurances'),
 
+  getInsuranceBySlug: (slug, params = '') =>
+    request(`/insurances/${slug}${params}`),
+
   getRadiology: (params = '') =>
     request(`/radiology-centers${params}`),
 
@@ -55,12 +58,8 @@ export const api = {
     request(`/clinics/${id}`),
 
   /* desde el Backend -> clinic.router.js */
-  getMRFs: () => 
-    request('/clinics/mrf'), 
-
   getPopularMRFs: () =>
     request('/clinics/mrf/popular'),
-
   
   createMRFRequest: (id, formData) =>
     request(`/clinics/${id}/mrf-request`, {

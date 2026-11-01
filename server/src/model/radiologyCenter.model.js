@@ -40,8 +40,8 @@ const radiologyCenterSchema = new Schema({
     locations: [locationSchema],  // Cada local tiene su propio phone y fax
     status: {
         type: String,
-        enum: ["active", "prohibited", "deleted"],
-        default: "active",
+        enum: ["verified", "prohibited", "deleted"],
+        default: "verified",
         index: true
     },
     blockReason: {

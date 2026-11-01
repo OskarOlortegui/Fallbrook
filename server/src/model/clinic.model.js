@@ -32,15 +32,10 @@ const clinicSchema = new Schema({
     faxes:  { type: [String], default: [] },
     website: { type: String },
     tin: { type: String }, // Tax ID específico de esa locación
-    // ── NUEVOS CAMPOS PARA MRF Y ENVIOS DE FAX ──
-    isMRF: {
-        type: Boolean,
-        default: true, // Si es true, esta entidad procesa/emite registros médicos
-        index: true
-    },
-    requestCount: {
+    // ── NUEVO CAMPO PARA MRF Y ENVIOS DE FAX ──
+    MRRequestCount: {
         type: Number,
-        default: 0, // Para saber cuáles son las más frecuentadas (Trending)
+        default: 0,
         index: true
     },
     notes: [noteSchema], 

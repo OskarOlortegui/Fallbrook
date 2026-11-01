@@ -21,7 +21,7 @@ export function useDashboardData() {
 
             // Ejecutamos todas las peticiones en paralelo
             const [docsRes, clinicsRes, groupsRes, insRes, radRes, mrfRes] = await Promise.all([
-                api.getDoctors(),
+                api.getDoctors('?limit=6&sortBy=profileViewCount'),
                 api.getClinics(),
                 api.getMedicalGroups(),
                 api.getInsurances(),

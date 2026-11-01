@@ -20,7 +20,7 @@ export const createDoctor = async (req,res) => {
 // NOTA: el filtro por insurance ahora es GET /api/insurances/prospect?type=doctors
 export const getDoctors = async (req,res) => {
     try {
-        const {city, specialty, name, includeDeleted} = req.query;
+        const {city, specialty, name, includeDeleted, limit: limitParam, sortBy} = req.query;
         let filter = {};
             
             // Filtro por nombre del doctor
@@ -32,9 +32,40 @@ export const getDoctors = async (req,res) => {
               // por ahora lo dejamos como placeholder hasta implementar el lookup
               console.log("filtro por city pendiente de implementar con lookup")
             }
+
+            // Opciones para ordenar y limitar los resultados.
+            const options = {};
+
+            // Solo permitir el ordenamiento por un campo conocido.
+            if (sortBy === 'profileViewCount') {
+            options.sort = {
+                profileViewCount: -1,
+                name: 1
+            };
+            }
+
+            // Validar el límite recibido por query params.
+            if (limitParam !== undefined) {
+                const parsedLimit = Number(limitParam);
+
+            if (
+                !Number.isInteger(parsedLimit) ||
+                parsedLimit < 1 ||
+                parsedLimit > 100
+            ) {
+                return res.status(400).json({
+                success: false,
+                errors: {
+                    message: 'Limit must be an integer between 1 and 100.'
+                }
+                });
+            }
+
+                options.limit = parsedLimit;
+            }
         
             // Pasamos "clinics" y medicalgroups para que rellene la info 
-            const doctors = await doctorsManager.readAll(filter, "clinics medicalGroups");
+            const doctors = await doctorsManager.readAll(filter, "clinics medicalGroups", options);
 
             // 2. Obtenemos los IDs de los doctores
             const doctorIds = doctors.map(doctor => doctor._id)
@@ -78,7 +109,17 @@ export const getDoctors = async (req,res) => {
 // GET /api/doctors/:id
 export const getDoctorById = async (req, res) => {
     try {
-         const doctor = await doctorsManager.readById(req.params.id, "clinics medicalGroups")
+          // Incrementar las visitas y obtener el doctor actualizado.
+        const doctor = await doctorsManager.model
+            .findByIdAndUpdate(
+                req.params.id,
+                { $inc: { profileViewCount: 1 } },
+                { returnDocument: 'after' }
+            )
+            .setOptions({ includeDeleted: true })
+            .populate("clinics medicalGroups")
+            .lean()
+            
         if (!doctor) {
             return res.status(404).json({ 
                 success: false, 

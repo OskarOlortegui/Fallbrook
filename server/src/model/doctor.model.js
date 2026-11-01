@@ -101,6 +101,11 @@ const doctorSchema = new Schema({
     blockReason: { 
         type: String, 
         default: "" // Ej: "Quieren cambio de PCP", "Ya no acepta IPA", "Bad reputation"
+    },
+    profileViewCount: {
+        type: Number,
+        default: 0,
+        index: true
     }
 }, {timestamps: true})
 

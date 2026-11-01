@@ -11,10 +11,11 @@ class Manager {
 
   createOne = async (data) => await this.model.create(data);
 
-  // Agregamos 'populatePath' para decidir qué "rellenar"
-  readAll = async (filter = {}, populatePath = "") => {
+  // Agregamos 'populatePath' para decidir qué "rellenar" 
+  readAll = async (filter = {}, populatePath = "", options = {}) => {
     // 1. Extraemos la "llave" del objeto filter
     const { includeDeleted, ...queryData } = filter;
+    const { sort, limit } = options
     // 2. Iniciamos la consulta con los datos limpios
     let query = this.model.find(queryData);
     
@@ -22,6 +23,9 @@ class Manager {
     if (includeDeleted) {
       query.setOptions({ includeDeleted: true });
     }
+    if (sort)  {query = query.sort(sort)}
+    if (limit) {query = query.limit(limit)}
+    
     return await query.populate(populatePath).lean();
     //return await this.model.find(filter).populate(populatePath).lean();
   };
@@ -68,8 +72,8 @@ class Manager {
   // NUEVO: Obtener los MRF populares ordenados por requestCount de mayor a menor
   readMRFs = async (limit = null) => {
     let query = this.model
-    .find({ isMRF: true })
-    .sort({ requestCount: -1, name: 1 }) // Mayor uso primero, si hay empate luego alfabético
+    .find({ MRRequestCount: { $gte: 0 } }) //luego lo cambias a $gt greater than
+    .sort({ MRRequestCount: -1, name: 1 }) // Mayor uso primero, si hay empate luego alfabético
 
     if (limit !== null) {
       query = query.limit(limit)

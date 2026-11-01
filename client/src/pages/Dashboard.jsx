@@ -1,6 +1,6 @@
 import CounterCard from '../components/CounterCard'
 import DoctorCard from '../components/DoctorCard'
-import MRFCard from '../components/MRFCard'
+import ClinicCard from '../components/ClinicCard'
 import { useEffect, useState } from 'react'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { Link } from 'react-router'
@@ -65,9 +65,9 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Doctores recientes */}
+        {/* Most Visited Doctors */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-medium">Recent doctors</h2>
+          <h2 className="text-base font-medium">Most Visited Doctors</h2>
           <Link to="/doctors" className="text-xs text-(--accent) hover:underline">See all →</Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-10">
@@ -80,12 +80,12 @@ export default function Dashboard() {
 
         {/* MRF */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-medium">Medical records facilities (MRF)</h2>
-          <Link to="/clinics/mrf" className="text-xs text-(--accent) hover:underline">See all →</Link>
+          <h2 className="text-base font-medium">Most Requested Clinics for MRFs</h2>
+          <Link to="/clinics" className="text-xs text-(--accent) hover:underline">See all →</Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-10">
-          {popularMRFs.map(mrf => (
-            <MRFCard key={mrf._id} facility={mrf} />
+          {popularMRFs.map(clinic => (
+            <ClinicCard key={clinic._id} clinic={clinic} />
           ))}
         </div>
       </section>

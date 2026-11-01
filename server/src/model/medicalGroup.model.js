@@ -18,7 +18,7 @@ const medicalGroupSchema = new Schema({
     notes: [noteSchema], 
     status: {
         type: String,
-        enum: ["verified", "prohibited", "out-of-network", "pending", "deleted"],
+        enum: ["verified", "out-of-network", "pending", "deleted"],
         default: "verified",
         index: true
     },

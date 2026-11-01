@@ -8,7 +8,7 @@ const STATUS_COLOR = {
 }
 
 export default function ClinicCard({ clinic }) {
-  const {name, address, city, state, zipCode, phones = [], faxes = [], status, isMRF} = clinic
+  const {_id, name, address, city, state, zipCode, phones = [], faxes = [], status, MRRequestCount = 0} = clinic
 
   return (
     <div className="bg-(--surface) border border-(--border) rounded-xl p-4 hover:border-(--accent) transition-colors">
@@ -18,12 +18,6 @@ export default function ClinicCard({ clinic }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start gap-2">
             <p className="text-sm font-medium text-(--text) leading-snug">{name}</p>
-
-            {isMRF && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-(--accent-bg) text-(--accent)">
-                MRF
-              </span>
-            )}
           </div>
 
           <p className="text-xs text-(--text2) mt-1">{address}</p>

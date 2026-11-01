@@ -220,70 +220,37 @@ export default function GroupDetail() {
       </section>
 
       {/* Notes */}
-      <section className="bg-(--surface) border border-(--border) rounded-xl p-5">
-        <h2 className="text-xs font-medium text-(--muted) uppercase tracking-wide mb-3">
-          Notes ({notes.length})
-        </h2>
-
-        <form onSubmit={handleAddNote} className="mb-5">
-          <textarea
-            value={newNote}
-            onChange={e => setNewNote(e.target.value)}
-            placeholder="Write a note..."
-            rows={3}
-            className="w-full bg-(--surface) border border-(--border) rounded-lg p-3 text-sm text-(--text) focus:outline-none focus:border-(--accent)"
-          />
-
-          {noteError && (
-            <p className="text-sm text-(--danger) mt-2">
-              {noteError}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={!newNote.trim() || savingNote}
-            className="mt-2 text-xs bg-(--accent) text-white rounded-lg px-4 py-2 hover:opacity-90 disabled:opacity-50"
-          >
-            {savingNote ? 'Saving...' : '＋ Add note'}
-          </button>
-        </form>
-
-        {notes.length === 0 ? (
-          <p className="text-sm text-(--muted) italic">
-            No notes yet.
+      <div className="bg-(--surface) border border-(--border) rounded-xl p-5">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs font-medium text-(--muted) uppercase tracking-wide mb-3">
+            Notes ({notes.length})
           </p>
-        ) : (
-          [...notes]
-            .sort((a, b) => Number(b.pinned) - Number(a.pinned))
-            .map(note => (
-              <div
-                key={note._id}
-                className={`mb-3 pb-3 border-b border-(--border) last:border-0 ${
-                  note.pinned ? 'border-l-2 border-l-(--accent) pl-3' : ''
-                }`}
-              >
-                <p className="text-sm text-(--text)">
-                  {note.content}
-                </p>
-
-                <p className="text-[11px] text-(--muted) mt-1">
-                  {note.author} · {note.date && new Date(note.date).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-
-                  {note.pinned && (
-                    <span className="ml-2 text-(--accent)">
-                      📌 pinned
-                    </span>
-                  )}
-                </p>
-              </div>
-            ))
-        )}
-      </section>
+          <button className="text-xs border border-(--border) rounded-lg px-3 py-1.5 text-(--text2) hover:bg-(--surface2) cursor-pointer">
+            📝 Add note
+          </button>
+        </div>
+        {notes.length === 0
+          ? <p className="text-sm text-(--muted) italic">No notes yet.</p>
+          : [...notes]
+              .sort((a, b) => b.pinned - a.pinned)
+              .map(note => (
+                <div
+                  key={note._id}
+                  className={`mb-3 pb-3 border-b border-(--border) last:border-0 last:mb-0 last:pb-0 ${
+                    note.pinned ? 'border-l-2 border-l-(--accent) pl-3' : ''
+                  }`}
+                >
+                  <p className="text-sm text-(--text)">{note.content}</p>
+                  <p className="text-[11px] text-(--muted) mt-1">
+                    {note.author} · {new Date(note.date).toLocaleDateString('en-US', {
+                      month: 'short', day: 'numeric', year: 'numeric'
+                    })}
+                    {note.pinned && <span className="ml-2 text-(--accent)">📌 pinned</span>}
+                  </p>
+                </div>
+              ))
+        }
+      </div>
     </div>
   )
 }

@@ -1,9 +1,10 @@
 import { Link } from 'react-router'
 
 const STATUS_COLOR = {
-  active:   'bg-(--success-bg) text-(--success)',
-  deleted:  'bg-(--danger-bg) text-(--danger)',
-  prohibited: 'bg-(--danger-bg) text-(--danger)',
+  verified:         'bg-(--success)',
+  pending:          'bg-yellow-400',
+  'out-of-network': 'bg-orange-400',
+  deleted:          'bg-(--danger)',
 }
 
 export default function RadiologyCenterCard({ center }) {
@@ -15,11 +16,11 @@ export default function RadiologyCenterCard({ center }) {
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <p className="text-sm font-medium text-(--text) leading-snug">{name}</p>
-        {status && (
-          <span className={`text-[11px] px-2 py-0.5 rounded-full flex-shrink-0 ${STATUS_COLOR[status] ?? 'bg-(--surface2) text-(--text2)'}`}>
-            {status}
-          </span>
-        )}
+        <span
+          className={`w-2 h-2 rounded-full flex-shrink-0 mt-1 ${STATUS_COLOR[status] ?? 'bg-gray-400'
+            }`}
+          title={status}
+        />
       </div>
 
       {accountNo && (
@@ -58,12 +59,15 @@ export default function RadiologyCenterCard({ center }) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between mt-4 pt-3 border-t border-(--border)">
+      <div className="flex gap-2 items-center justify-between mt-4 pt-3 border-t border-(--border)">
         {website
           ? <a href={website} target="_blank" rel="noreferrer" className="text-xs text-(--accent) hover:underline">🌐 Website</a>
           : <span />
         }
-        <Link to={`/radiology-centers/${_id}`} className="text-xs text-(--accent) hover:underline font-medium">
+        <button className="flex-1 text-xs border border-(--border) rounded-lg py-1.5 text-(--text2) hover:bg-(--surface2) cursor-pointer">
+          📝 Note
+        </button>
+        <Link to={`/radiology-centers/${_id}`} className="flex-1 text-xs text-center bg-(--accent) text-white rounded-lg py-1.5 hover:opacity-90 cursor-pointer">
           View details →
         </Link>
       </div>

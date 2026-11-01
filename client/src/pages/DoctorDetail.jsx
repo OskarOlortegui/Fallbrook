@@ -1,5 +1,7 @@
 import { useParams, Link } from 'react-router'
 import { useDoctorDetail } from '../hooks/useDoctorDetail'
+import { MRFRequestForm } from '../components/mrf/MRFRequestForm'
+import { useState } from 'react'
 
 function initials(name) {
   return name.replace('Dr. ', '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
@@ -15,6 +17,7 @@ const STATUS_COLOR = {
 export default function DoctorDetail() {
   const { id } = useParams()
   const { doctor, loading, error } = useDoctorDetail(id)
+  const [selectedClinicId, setSelectedClinicId] = useState(null)
 
   if (loading) return <p className="p-8 text-sm text-(--muted)">Loading...</p>
   if (error)   return <p className="p-8 text-sm text-(--danger)">{error}</p>
@@ -25,6 +28,11 @@ export default function DoctorDetail() {
     clinics = [], medicalGroups = [],
     insurances = [], notes = []
   } = doctor
+
+  const selectedClinic =
+  clinics.find(c => c._id === selectedClinicId) ||
+  clinics[0] ||
+  null
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-8">
@@ -56,23 +64,52 @@ export default function DoctorDetail() {
         </div>
       </div>
 
-      {/* Clinics */}
+      {/* Clinics List */}
       <div className="bg-(--surface) border border-(--border) rounded-xl p-5 mb-4">
         <p className="text-xs font-medium text-(--muted) uppercase tracking-wide mb-3">
           Clinics ({clinics.length})
         </p>
         {clinics.length === 0
           ? <p className="text-sm text-(--muted) italic">No clinics assigned</p>
-          : clinics.map(c => (
-              <div key={c._id} className="mb-3 pb-3 border-b border-(--border) last:border-0 last:mb-0 last:pb-0">
-                <p className="text-sm font-medium text-(--text)">{c.name}</p>
-                <p className="text-xs text-(--text2) mt-0.5">{c.address}, {c.city}, {c.state} {c.zipCode}</p>
-                <div className="flex gap-3 mt-1.5 text-xs text-(--text2)">
-                  {c.phones?.[0] && <span>📞 {c.phones[0]}</span>}
-                  {c.faxes?.[0]  && <span>📠 {c.faxes[0]}</span>}
-                </div>
+          : clinics.map(c => {
+            const isSelected = selectedClinic?._id === c._id;
+            return (
+              <div  
+                key={c._id}
+                role="button"
+                tabIndex={0} // porque?
+                onClick={() => {
+                  // Previene cambio de selección si el usuario seleccionó texto con el mouse
+                  if (!window.getSelection().toString()) {
+                    setSelectedClinicId(c._id)
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setSelectedClinicId(c._id)
+                  }
+                }}
+                className={`w-full text-left mb-3 p-3 rounded-lg border transition-colors ${
+                  isSelected
+                    ? 'border-(--accent) bg-(--accent-bg)'
+                    : 'border-transparent hover:bg-(--surface2)'
+                }`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-sm font-medium text-(--text)">{c.name}</p>
+                    {isSelected && (
+                      <span className="text-xs text-(--accent) flex-shrink-0">
+                        Selected
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-(--text2) mt-0.5">{c.address}, {c.city}, {c.state} {c.zipCode}</p>
+                  <div className="flex gap-3 mt-1.5 text-xs text-(--text2)">
+                    {c.phones?.[0] && <span>📞 {c.phones[0]}</span>}
+                    {c.faxes?.[0]  && <span>📠 {c.faxes[0]}</span>}
+                    {!c.faxes?.length && <span className="text-(--muted)">No fax listed</span>}
+                  </div>
               </div>
-            ))
+            )})
         }
       </div>
 
@@ -87,8 +124,8 @@ export default function DoctorDetail() {
               <p className="text-sm font-medium text-(--text)">{mg.name}</p>
               <div className="flex gap-3 mt-1 text-xs text-(--text2)">
                 {mg.phones?.[0] && <span>📞 {mg.phones[0]}</span>}
-                {mg.faxes?.[0]  && <span>📠 {mg.faxes[0]}</span>}
-                {mg.website     && (
+                {mg.faxes?.[0] && <span>📠 {mg.faxes[0]}</span>}
+                {mg.website && (
                   <a href={mg.website} target="_blank" rel="noreferrer" className="text-(--accent) hover:underline">
                     🌐 Website
                   </a>
@@ -153,6 +190,9 @@ export default function DoctorDetail() {
               ))
         }
       </div>
+
+      {/* MRF Request Form */}
+      <MRFRequestForm clinic={selectedClinic} initialRequesting={selectedClinic ? `${name} - ${selectedClinic.name}` : ''}/>
 
     </div>
   )

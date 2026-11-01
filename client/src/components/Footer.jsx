@@ -7,7 +7,6 @@ export default function Footer() {
     { label: 'Clinics', path: '/clinics' },
     { label: 'Insurances', path: '/insurances' },
     { label: 'Radiology', path: '/radiology' },
-    { label: 'MRF', path: '/clinics/mrf' }
   ]
 
   return (
